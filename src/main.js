@@ -17,3 +17,13 @@ new Vue({
   components: { App },
   template: '<App/>'
 })
+
+// Vue.directive('v-trans', {
+//   bind: function (el, binding, vnode) {
+
+//   },
+//   inserted: () => {},
+//   update: () => {},
+//   componentUpdated: () => {},
+//   unbind: () => {}
+// })
