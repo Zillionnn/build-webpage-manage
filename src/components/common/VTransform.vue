@@ -15,11 +15,11 @@
         <slot />
       </div>
       <div class="operate top-left" v-show="showOperate" @mousedown="setSize(1)" @mouseup="setSize(0)"></div>
-      <div class="operate top" v-show="showOperate" @mousedown="setSize(1, 2)" @mouseup="setSize(0)"></div>
+      <div class="operate top" v-show="showOperate" @mousedown="setSize(1, 'UP')" @mouseup="setSize(0)"></div>
       <div class="operate top-right" v-show="showOperate" @mousedown="setSize(1)" @mouseup="setSize(0)"></div>
-      <div class="operate right" v-show="showOperate" @mousedown="setSize(1, 3)" @mouseup="setSize(0)"></div>
-      <div class="operate bottom-right" v-show="showOperate" @mousedown="setSize(1)" @mouseup="setSize(0)"></div>
-      <div class="operate bottom" v-show="showOperate" @mousedown="setSize(1)" @mouseup="setSize(0)"></div>
+      <div class="operate right" v-show="showOperate" @mousedown="setSize(1, 'RIGHT')" @mouseup="setSize(0)"></div>
+      <div class="operate bottom-right" v-show="showOperate" @mousedown="setSizeCross('DOWN','RIGHT')" @mouseup="setSize(0)"></div>
+      <div class="operate bottom" v-show="showOperate" @mousedown="setSize(1, 'DOWN')" @mouseup="setSize(0)"></div>
       <div class="operate bottom-left" v-show="showOperate" @mousedown="setSize(1)" @mouseup="setSize(0)"></div>
       <div class="operate left" v-show="showOperate" @mousedown="setSize(1)" @mouseup="setSize(0)"></div>
     </div>
@@ -75,10 +75,10 @@ export default {
   data () {
     return {
       DIRECTION: {
-        LEFT: 1,
-        UP: 2,
-        RIGHT: 3,
-        BOTTOM: 4
+        LEFT: false,
+        UP: false,
+        RIGHT: false,
+        DOWN: false
       },
       showOperate: false,
       canMove: false,
@@ -135,9 +135,13 @@ export default {
           const top = offsetHeight
           this.$emit('update', {y: top, height: offsetHeight})
         }
-        if (this.resizeDirection === 3) {
+        if (this.DIRECTION.RIGHT) {
           const offsetWidth = this.mousePosition.x - this.x - this.canvas.left
           this.$emit('update', {width: offsetWidth})
+        }
+        if (this.DIRECTION.DOWN) {
+          const d = this.mousePosition.y - this.y - this.canvas.top
+          this.$emit('update', {height: d})
         }
       }
     },
@@ -172,8 +176,22 @@ export default {
      */
     setSize (p, direction) {
       console.warn('DO RESET')
-      p === 1 ? this.canReSize = true : this.canReSize = false
-      this.resizeDirection = direction
+      if (p === 1) {
+        this.canReSize = true
+        this.DIRECTION[direction] = true
+      } else {
+        this.canReSize = false
+        this.DIRECTION = {
+          LEFT: false,
+          UP: false,
+          RIGHT: false,
+          DOWN: false
+        }
+      }
+    },
+    setSizeCross (r, c) {
+      this.setSize(1, r)
+      this.setSize(1, c)
     }
   }
 }
