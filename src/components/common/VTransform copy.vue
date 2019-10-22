@@ -108,17 +108,13 @@ export default {
           this.toggleOperates(false)
         }
       })
-      document.addEventListener('mouseup', e => {
-        this.setSize(0)
-      })
       document.addEventListener('mousemove', this.getMousePosition)
     },
     // 鼠标位置
     getMousePosition (event) {
       this.mousePosition.x = event.x
       this.mousePosition.y = event.y
-      // console.log(event.offsetX - this.width)
-      console.log(this.canReSize)
+      console.log(event.offsetX - this.width)
       this.drag()
     },
     drag (event) {
@@ -171,7 +167,6 @@ export default {
      * 设置是否可以改大小
      */
     setSize (p, direction) {
-      console.warn('DO RESET')
       p === 1 ? this.canReSize = true : this.canReSize = false
       this.resizeDirection = direction
     }
