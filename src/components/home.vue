@@ -1,6 +1,13 @@
 <template>
   <div class="canvas-wrap">
     {{currentBox}}
+    <div>
+      x:
+      <input type="number" v-model="currentBox.x" />
+      y:
+      <input type="number" v-model="currentBox.y" />
+    </div>
+
     <div v-for="(box, index) in elements" :key="index">
       <v-transform
         :id="box.id"
@@ -51,7 +58,6 @@ export default {
           rotate: 0
         }
       ]
-
     }
   },
   methods: {
