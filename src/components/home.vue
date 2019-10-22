@@ -1,6 +1,6 @@
 <template>
   <div class="canvas-wrap">
-    {{elements[0]}}
+    {{currentBox}}
     <div v-for="(box, index) in elements" :key="index">
       <v-transform
         :id="box.id"
@@ -32,6 +32,7 @@ export default {
         top: 60,
         left: 100
       },
+      currentBox: {},
       elements: [
         {
           id: 'f1',
@@ -56,6 +57,7 @@ export default {
   methods: {
     update (box, args) {
       const conf = args[0]
+      this.currentBox = box
       console.log('UPDATE >> ', conf)
 
       box = Object.assign(box, conf)
