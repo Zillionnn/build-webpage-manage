@@ -1,12 +1,17 @@
 <template>
   <div class="canvas-wrap">
     {{box}}
-    <v-transform :canvas="canvas" :y="box.y" :x="box.x" :width="box.width" :height="box.height" @update="update">
-      <div style="width:100%;height:100%;">
-        123
-      </div>
+    <v-transform
+      :canvas="canvas"
+      :y="box.y"
+      :x="box.x"
+      :width="box.width"
+      :height="box.height"
+      :rotate="box.rotate"
+      @update="update"
+    >
+      <div style="width:100%;height:100%;">123</div>
     </v-transform>
-
   </div>
 </template>
 
@@ -28,7 +33,8 @@ export default {
         x: 100,
         y: 100,
         width: 100,
-        height: 200
+        height: 200,
+        rotate: 0
       }
     }
   },
@@ -50,7 +56,7 @@ export default {
 </script>
 
 <style scoped>
-.canvas-wrap{
+.canvas-wrap {
   border: 1px solid;
   width: 800px;
   height: 800px;

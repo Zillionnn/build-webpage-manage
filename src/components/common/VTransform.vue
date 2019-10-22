@@ -14,6 +14,7 @@
       >
         <slot />
       </div>
+      <div class="operate op-rotate" v-show="showOperate" @mousedown="setRotate(1)" @mouseup="setSize(0)"></div>
       <div class="operate top-left" v-show="showOperate" @mousedown="setSizeCross('UP','LEFT')" @mouseup="setSize(0)"></div>
       <div class="operate top" v-show="showOperate" @mousedown="setSize(1, 'UP')" @mouseup="setSize(0)"></div>
       <div class="operate top-right" v-show="showOperate" @mousedown="setSizeCross('UP','RIGHT')" @mouseup="setSize(0)"></div>
@@ -83,6 +84,7 @@ export default {
       showOperate: false,
       canMove: false,
       canReSize: false,
+      canRotate: false,
       mousePosition: {
         x: 0,
         y: 0
@@ -96,7 +98,11 @@ export default {
       resizeDirection: null
     }
   },
-
+  computed: {
+    center () {
+      return {x: this.canvas.left + this.x + this.width / 2, y: this.canvas.top + this.y + this.height / 2}
+    }
+  },
   created () {
     this.listenClick()
   },
@@ -114,6 +120,7 @@ export default {
       })
       document.addEventListener('mouseup', e => {
         this.setSize(0)
+        this.setRotate(0)
       })
       document.addEventListener('mousemove', this.getMousePosition)
     },
@@ -126,6 +133,7 @@ export default {
       this.drag()
     },
     drag (event) {
+      // move
       if (this.canMove) {
         const top = this.mousePosition.y - this.offsetY
         const left = this.mousePosition.x - this.offsetX
@@ -133,6 +141,7 @@ export default {
         this.$emit('update', { x: left, y: top })
       }
 
+      // resize
       if (this.canReSize) {
         console.log('this.DIRECTION.UP', this.DIRECTION.UP)
         if (this.DIRECTION.UP) {
@@ -158,6 +167,36 @@ export default {
         if (this.DIRECTION.DOWN) {
           const d = this.mousePosition.y - this.y - this.canvas.top
           this.$emit('update', {height: d})
+        }
+      }
+
+      // rotate
+      if (this.canRotate) {
+        console.log(this.mousePosition.x, this.center)
+
+        // two point distance
+        const d = Math.sqrt(Math.pow((this.mousePosition.x - this.center.x), 2) + Math.pow((this.mousePosition.y - this.center.y), 2))
+        console.log(d)
+        // mouse to point x
+        let rightAngle = 0
+        if (this.mousePosition.y < this.center.y) {
+          rightAngle = this.mousePosition.x - this.center.x
+          // 弧度
+          const radian = Math.asin(rightAngle / d)
+          if (rightAngle > 0) {
+            this.$emit('update', { rotate: radian * 180 / Math.PI })
+          } else {
+            this.$emit('update', { rotate: (radian * 180 / Math.PI) + 360 })
+          }
+        } else {
+          rightAngle = this.mousePosition.y - this.center.y
+          // 弧度
+          const radian = Math.asin(rightAngle / d)
+          if (this.mousePosition.x - this.center.x > 0) {
+            this.$emit('update', { rotate: (radian * 180 / Math.PI) + 90 })
+          } else {
+            this.$emit('update', { rotate: 270 - (radian * 180 / Math.PI) })
+          }
         }
       }
     },
@@ -212,7 +251,18 @@ export default {
     setSizeCross (r, c) {
       this.setSize(1, r)
       this.setSize(1, c)
+    },
+    /**
+     * 旋转
+     */
+    setRotate (p) {
+      if (p === 1) {
+        this.canRotate = true
+      } else {
+        this.canRotate = false
+      }
     }
+    // #####################methods#############################
   }
 }
 </script>
@@ -228,8 +278,6 @@ export default {
 .container:hover {
   position: absolute;
   cursor: move;
-  background: #0cf;
-  opacity: 1;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
@@ -256,6 +304,22 @@ export default {
   background: #ffffff;
   border: 1px solid #cccccc;
   position: absolute;
+}
+.op-rotate{
+  top: -30px;
+  left: 50%;
+  margin-left: -5px;
+  cursor: ew-resize;
+}
+.op-rotate::before{
+    content: " ";
+    position: absolute;
+    width: 0;
+    border-left: 1px solid #0cf;
+    left: 5px;
+    top: 10px;
+    height: 19px;
+    pointer-events: none;
 }
 .top-left {
   top: -5px;
