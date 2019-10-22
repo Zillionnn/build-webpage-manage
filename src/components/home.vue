@@ -1,17 +1,20 @@
 <template>
   <div class="canvas-wrap">
-    {{box}}
-    <v-transform
-      :canvas="canvas"
-      :y="box.y"
-      :x="box.x"
-      :width="box.width"
-      :height="box.height"
-      :rotate="box.rotate"
-      @update="update"
-    >
-      <div style="width:100%;height:100%;">123</div>
-    </v-transform>
+    {{elements[0]}}
+    <div v-for="(box, index) in elements" :key="index">
+      <v-transform
+        :id="box.id"
+        :canvas="canvas"
+        :y="box.y"
+        :x="box.x"
+        :width="box.width"
+        :height="box.height"
+        :rotate="box.rotate"
+        @update="update(box,arguments)"
+      >
+        <div :id="box.id" style="width:100%;height:100%;">123</div>
+      </v-transform>
+    </div>
   </div>
 </template>
 
@@ -29,27 +32,40 @@ export default {
         top: 60,
         left: 100
       },
-      box: {
-        x: 100,
-        y: 100,
-        width: 100,
-        height: 200,
-        rotate: 0
-      }
+      elements: [
+        {
+          id: 'f1',
+          x: 100,
+          y: 100,
+          width: 100,
+          height: 200,
+          rotate: 0
+        },
+        {
+          id: 'f2',
+          x: 0,
+          y: 0,
+          width: 50,
+          height: 50,
+          rotate: 0
+        }
+      ]
+
     }
   },
   methods: {
-    update (conf) {
+    update (box, args) {
+      const conf = args[0]
       console.log('UPDATE >> ', conf)
 
-      this.box = Object.assign(this.box, conf)
+      box = Object.assign(box, conf)
       if (conf.x) {
-        this.box.x = conf.x - 100
+        box.x = conf.x - 100
       }
       if (conf.y) {
-        this.box.y = conf.y - 60
+        box.y = conf.y - 60
       }
-      console.log('box', this.box.width)
+      console.log('box', box.width)
     }
   }
 }

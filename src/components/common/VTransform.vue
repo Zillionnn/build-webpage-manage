@@ -38,6 +38,10 @@ export default {
   name: 'VTransform',
   components: {},
   props: {
+    id: {
+      type: String,
+      required: false
+    },
     canvas: {
       type: Object,
       required: false
@@ -109,6 +113,7 @@ export default {
   methods: {
     listenClick () {
       document.addEventListener('mousedown', e => {
+        console.log(e)
         if (
           e.target.classList[0] !== 'container' &&
           e.target.classList[0] !== 'wrap' &&
@@ -129,7 +134,6 @@ export default {
       this.mousePosition.x = event.x
       this.mousePosition.y = event.y
       // console.log(event.offsetX - this.width)
-      console.log(this.canReSize)
       this.drag()
     },
     drag (event) {
@@ -287,6 +291,12 @@ export default {
   position: relative;
   width: 100% !important;
   height: 100% !important;
+}
+.wrap:hover{
+   position: relative;
+   width: 100%;
+  height: 100%;
+  box-shadow: 0 0 0 0.5px #0cf, inset 0 0 0 0.5px #0cf;
 }
 .wrap-box-shadow {
   position: relative;
