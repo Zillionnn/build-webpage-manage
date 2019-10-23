@@ -27,6 +27,7 @@
           :height="box.height"
           :rotate="box.rotate"
           @update="update(box,arguments)"
+          @select="setSelect(index)"
         >
           <div :id="box.id" style="width:100%;height:100%;">
             <v-render
@@ -127,7 +128,8 @@ export default {
         }
       },
 
-      dragItem: null
+      dragItem: null,
+      selectedIdx: 0
     }
   },
   created () {
@@ -171,6 +173,7 @@ export default {
   methods: {
     listenEvent () {
       document.addEventListener('mousemove', this.getMousePosition)
+      document.addEventListener('keyup', this.keyEvent)
     },
     getMousePosition (event) {
       this.mousePosition.x = event.x
@@ -185,6 +188,19 @@ export default {
         .catch(err => {
           console.error(err)
         })
+    },
+
+    keyEvent (event) {
+      if (event.keyCode === 46) {
+        this.page.elements.splice(this.selectedIdx, 1)
+      }
+    },
+    /**
+     * 选中的组件
+     */
+    setSelect (index) {
+      this.selectedIdx = index
+      console.log('index', index)
     },
     update (box, args) {
       const conf = args[0]

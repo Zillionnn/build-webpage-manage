@@ -113,7 +113,6 @@ export default {
   methods: {
     listenClick () {
       document.addEventListener('mousedown', e => {
-        console.log(e)
         if (
           e.target.classList[0] !== 'container' &&
           e.target.classList[0] !== 'wrap' &&
@@ -209,6 +208,7 @@ export default {
     setDrag (p, event) {
       this.canMove = p === 0
       this.toggleOperates(true)
+      this.$emit('select')
       if (this.canMove) {
         this.offsetX = this.mousePosition.x - this.x - this.canvas.left
         this.offsetY = this.mousePosition.y - this.y - this.canvas.top
