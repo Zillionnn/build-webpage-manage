@@ -1,6 +1,10 @@
 <template>
   <div class="body">
     <div style="position:absolute;top:10px; left:10px;">
+      <div>
+        页面
+        <button @click="addPage('custom')">添加页面</button>
+      </div>
       <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
       <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
     </div>
@@ -11,7 +15,8 @@
       @dragover="allowDrop"
       @drop="drop"
     >
-      <div v-for="(box, index) in elements" :key="index">
+    <!-- 页面上的组件 -->
+      <div v-for="(box, index) in page.elements" :key="index">
         <v-transform
           :ref="box.id"
           :id="box.id"
@@ -45,7 +50,7 @@
           y:
           <input type="number" v-model="currentBox.y" />
         </div>
-        <div>
+        <div v-if="currentBox.info.attrs.hasOwnProperty('src')">
           imgsrc:
           <input type="text" v-model="currentBox.info.attrs.src" />
         </div>
@@ -70,6 +75,42 @@ export default {
   },
   data () {
     return {
+      // 页面
+      page: {
+        name: '',
+        elements: [
+          {
+            id: 'f1',
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 200,
+            rotate: 40,
+            info: {
+              tagName: 'span',
+              attrs: {
+                id: 'f1'
+              },
+              content: '文字'
+            }
+          },
+          {
+            id: 'f2',
+            x: 0,
+            y: 0,
+            width: 50,
+            height: 50,
+            rotate: 0,
+            info: {
+              tagName: 'span',
+              attrs: {
+                id: 'f1'
+              },
+              content: '文字'
+            }
+          }
+        ]
+      },
       mousePosition: {
         x: 0,
         y: 0
@@ -85,38 +126,7 @@ export default {
           }
         }
       },
-      elements: [
-        {
-          id: 'f1',
-          x: 100,
-          y: 100,
-          width: 100,
-          height: 200,
-          rotate: 40,
-          info: {
-            tagName: 'span',
-            attrs: {
-              id: 'f1'
-            },
-            content: '文字'
-          }
-        },
-        {
-          id: 'f2',
-          x: 0,
-          y: 0,
-          width: 50,
-          height: 50,
-          rotate: 0,
-          info: {
-            tagName: 'span',
-            attrs: {
-              id: 'f1'
-            },
-            content: '文字'
-          }
-        }
-      ],
+
       dragItem: null
     }
   },
@@ -197,8 +207,9 @@ export default {
     drop () {
       console.log(this.dragItem)
       const id = 't' + parseInt(Math.random() * 100)
+      let elements = this.page.elements
       if (this.dragItem === 'text') {
-        this.elements.push({
+        elements.push({
           id: id,
           x: 0,
           y: 0,
@@ -215,7 +226,7 @@ export default {
         })
       }
       if (this.dragItem === 'pic') {
-        this.elements.push({
+        elements.push({
           id: 'f1',
           x: 0,
           y: 0,
@@ -235,6 +246,18 @@ export default {
       }
 
       this.$refs[id].toggleOperates(true)
+    },
+
+    /**
+     * 添加页面
+     */
+    addPage (type) {
+      if (type === 'custom') {
+        this.page = {
+          name: '自定义页面',
+          elements: []
+        }
+      }
     }
     // ###########################methods#########################
   }
