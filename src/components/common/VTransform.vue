@@ -279,14 +279,7 @@ export default {
   user-select: none;
   position: absolute;
 }
-.container:hover {
-  position: absolute;
-  cursor: move;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
+
 .wrap {
   position: relative;
   width: 100% !important;
@@ -307,6 +300,11 @@ export default {
 .content-op{
   width: 100%;
   height: 100%;
+}
+.content-op:hover{
+  width: 100%;
+  height: 100%;
+  cursor: move;
 }
 .operate {
   width: 10px;
