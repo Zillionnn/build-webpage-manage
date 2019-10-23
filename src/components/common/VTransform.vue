@@ -210,9 +210,9 @@ export default {
       this.canMove = p === 0
       this.toggleOperates(true)
       if (this.canMove) {
-        this.offsetX = event.offsetX
-        this.offsetY = event.offsetY
-        console.log(this.offsetX, this.offsetY)
+        this.offsetX = this.mousePosition.x - this.x - this.canvas.left
+        this.offsetY = this.mousePosition.y - this.y - this.canvas.top
+        console.log(this.offsetX, this.offsetY, ',,,', event.offsetX, event.offsetY)
       }
     },
 
