@@ -65,9 +65,9 @@
 </template>
 
 <script>
+import * as api from '@/api'
 import VTransform from './common/VTransform.vue'
 import Vue from 'vue'
-import { $http } from '@/service/requestService.js'
 
 export default {
   name: 'home',
@@ -180,21 +180,25 @@ export default {
       this.mousePosition.y = event.y
     },
     getWebJson () {
-      $http
-        .get('http://127.0.0.1:3000/api/v1/webjson')
-        .then(res => {
-          this.webJson = res.data.data
-        })
-        .catch(err => {
-          console.error(err)
-        })
+      // $http
+      //   .get('http://127.0.0.1:3000/api/v1/webjson')
+      //   .then(res => {
+      //     this.webJson = res.data.data
+      //   })
+      //   .catch(err => {
+      //     console.error(err)
+      //   })
     },
 
+    /**
+     * 删除组件
+     */
     keyEvent (event) {
       if (event.keyCode === 46) {
         this.page.elements.splice(this.selectedIdx, 1)
       }
     },
+
     /**
      * 选中的组件
      */
@@ -273,6 +277,10 @@ export default {
           name: '自定义页面',
           elements: []
         }
+        api.base.addPage(this.page)
+          .then(res => {
+          // this.page.page_id
+          })
       }
     }
     // ###########################methods#########################
