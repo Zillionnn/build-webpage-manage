@@ -16,6 +16,16 @@ export default{
   deleteApp (id) {
     return $http.delete(url + `/api/app/${id}`)
   },
+
+  // 查看app pages
+  appPageList () {
+
+  },
+
+  // 查看app menus
+  appMenuList () {
+
+  },
   addPage () {
     return $http.post(url + '/api/createPage')
   }
