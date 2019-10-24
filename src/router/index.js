@@ -9,6 +9,11 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/page-config/:id',
+      name: 'PageConfig',
+      component: () => import('@/components/pages/PageConfig.vue')
     }
   ]
 })

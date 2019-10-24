@@ -3,6 +3,19 @@ import {$http} from '@/service/requestService.js'
 const url = process.env.URL
 
 export default{
+  appList () {
+    return $http.get(url + `/api/app/list`)
+  },
+  addApp ({name}) {
+    console.log(name)
+    return $http.post(url + `/api/app/add`, {
+      name: name
+    })
+  },
+
+  deleteApp (id) {
+    return $http.delete(url + `/api/app/${id}`)
+  },
   addPage () {
     return $http.post(url + '/api/createPage')
   }
