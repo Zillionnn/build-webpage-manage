@@ -18,8 +18,8 @@ export default{
   },
 
   // 查看app pages
-  appPageList () {
-
+  appPageList (id) {
+    return $http.get(url + `/api/app/page/${id}`)
   },
 
   // 查看app menus
