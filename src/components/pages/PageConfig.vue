@@ -1,12 +1,37 @@
 <template>
   <div class="body">
-    <div style="position:absolute;top:10px; left:10px;">
-      <div>
-        页面
-        <button @click="addPage('custom')">添加页面</button>
-      </div>
+    <div class="side-bar">
+      <div class="item" @click="active=0">页面</div>
+      <div class="item" @click="active=1">组件</div>
       <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
       <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
+    </div>
+
+    <div class="side-bar-menu">
+      <div v-show="active===0">
+        <div style="border-bottom: 1px solid #bbb;">
+          <div @click="showNavigator= !showNavigator" class="tab-title">导航布局</div>
+          <div v-show="showNavigator">
+            <div class="layout-wrap">
+            <layout-thumbnail :type="'none'" :class="{'activeLayout':layout==='none'}" @change="setLayout('none')"/>
+            <layout-thumbnail :type="'top-nav'" :class="{'activeLayout':layout==='top-nav'}" @change="setLayout('top-nav')"/>
+            <layout-thumbnail :type="'left-nav'" :class="{'activeLayout':layout==='left-nav'}" @change="setLayout('left-nav')"/>
+            <layout-thumbnail :type="'left-top-nav'" :class="{'activeLayout':layout==='left-top-nav'}" @change="setLayout('left-top-nav')"/>
+            </div>
+
+            <button>页面设置</button>
+          </div>
+        </div>
+        <div>
+          <div @click="showPages= !showPages" class="tab-title">页面</div>
+          <div v-show="showPages">
+            <div v-for="(item,index) in pages" :key="index">{{item}}</div>
+          </div>
+        </div>
+      </div>
+      <div v-show="active===1">
+        <button>组件</button>
+      </div>
     </div>
     <!-- 画布 操作界面 -->
     <div
@@ -15,7 +40,7 @@
       @dragover="allowDrop"
       @drop="drop"
     >
-    <!-- 页面上的组件 -->
+      <!-- 页面上的组件 -->
       <div v-for="(box, index) in page.elements" :key="index">
         <v-transform
           :ref="box.id"
@@ -43,22 +68,11 @@
     <!-- 配置 -->
     <div class="config-panel">
       <div>
-        <div>
-          x:
-          <input type="number" v-model="currentBox.x" />
+        <div class="tab-title">菜单配置</div>
+        <div v-for="(item,index) in menuList" :key="index">
+          {{item.name}}
         </div>
-        <div>
-          y:
-          <input type="number" v-model="currentBox.y" />
-        </div>
-        <div v-if="currentBox.info.attrs.hasOwnProperty('src')">
-          imgsrc:
-          <input type="text" v-model="currentBox.info.attrs.src" />
-        </div>
-        <div>
-          content:
-          <input type="text" v-model="currentBox.info.content" />
-        </div>
+        <button @click="addParentMenu()">新增主菜单</button>
       </div>
     </div>
   </div>
@@ -67,15 +81,21 @@
 <script>
 import * as api from '@/api'
 import VTransform from '@/components/common/VTransform.vue'
+import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
+
 import Vue from 'vue'
 
 export default {
   name: 'PageConfig',
   components: {
-    VTransform
+    VTransform,
+    LayoutThumbnail
   },
   data () {
     return {
+      active: 0,
+      showNavigator: false,
+      showPages: false,
       // 页面
       page: {
         name: '',
@@ -118,7 +138,7 @@ export default {
       },
       canvas: {
         top: 60,
-        left: 200
+        left: 300
       },
       currentBox: {
         info: {
@@ -127,13 +147,16 @@ export default {
           }
         }
       },
+      layout: '',
+      configType: '',
 
       dragItem: null,
-      selectedIdx: 0
+      selectedIdx: 0,
+      menuList: []
     }
   },
   created () {
-    // this.getWebJson()
+    this.getPages()
     // console.log('###########TEMPLATE PAGE################')
     this.listenEvent()
     Vue.component('v-render', {
@@ -179,15 +202,15 @@ export default {
       this.mousePosition.x = event.x
       this.mousePosition.y = event.y
     },
-    getWebJson () {
-      // $http
-      //   .get('http://127.0.0.1:3000/api/v1/webjson')
-      //   .then(res => {
-      //     this.webJson = res.data.data
-      //   })
-      //   .catch(err => {
-      //     console.error(err)
-      //   })
+    getPages () {
+      api.base
+        .appPageList(this.$route.params.id)
+        .then(res => {
+          console.log(res.data.data)
+        })
+        .catch(err => {
+          console.error(err)
+        })
     },
 
     /**
@@ -277,11 +300,21 @@ export default {
           name: '自定义页面',
           elements: []
         }
-        api.base.addPage(this.page)
-          .then(res => {
+        api.base.addPage(this.page).then(res => {
           // this.page.page_id
-          })
+        })
       }
+    },
+
+    setLayout (p) {
+      this.layout = p
+    },
+
+    addParentMenu () {
+      this.menuList.push({
+        name: '',
+        link: ''
+      })
     }
     // ###########################methods#########################
   }
@@ -292,6 +325,11 @@ export default {
 .body {
   display: flex;
   justify-content: flex-start;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 .component-drag {
   padding: 10px;
@@ -308,6 +346,44 @@ export default {
   top: 0;
   right: 0;
   bottom: 0;
-  border: 1px solid;
+  width: 300px;
+  border: 1px solid #bbb;
+  background: #ffffff;
+}
+
+.side-bar {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  bottom: 0;
+  color: #ffffff;
+  background: #000000;
+}
+.side-bar .item {
+  border-bottom: 1px solid #bbb;
+  padding: 10px;
+}
+
+.side-bar-menu {
+  position: absolute;
+  top: 0;
+  left: 55px;
+  bottom: 0;
+  width: 220px;
+  background: #ffffff;
+  border-right: 1px solid #bbb;
+}
+.tab-title {
+  padding: 10px;
+  text-align: left;
+}
+.layout-wrap{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  padding: 20px;
+}
+.activeLayout{
+  border: 3px solid #00ccff;
 }
 </style>
