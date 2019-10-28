@@ -1,12 +1,18 @@
 <template>
   <div id="app">
+    <head-bar></head-bar>
     <router-view/>
   </div>
 </template>
 
 <script>
+import HeadBar from './components/common/HeadBar.vue'
+
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    HeadBar
+  }
 }
 </script>
 
@@ -20,5 +26,7 @@ body,html{
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  height: 100vh;
+  position: relative;
 }
 </style>
