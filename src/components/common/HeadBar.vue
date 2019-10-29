@@ -4,6 +4,7 @@
          <img v-if="logo" :src="logo"/>
      </div>
      <div>
+         <a @click="savePage()">保存</a>
          <a>发布</a>
      </div>
  </div>
@@ -26,7 +27,13 @@ export default {
     return {
 
     }
+  },
+  methods: {
+    savePage () {
+      this.$store.dispatch('passSave', true)
+    }
   }
+
 }
 </script>
 

@@ -73,6 +73,10 @@ export default{
 
   pageDetail (pageId) {
     return $http.get(url + `/api/app/page/detail/${pageId}`)
+  },
+
+  updatePageComponents (page) {
+    return $http.put(url + `/api/app/page/components/${page.page_id}`, page)
   }
 
 }

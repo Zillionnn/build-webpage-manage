@@ -187,6 +187,9 @@ export default {
     appId () {
       console.log(this.$route)
       return this.$route.params.id
+    },
+    doSave () {
+      return this.$store.getters.doSave
     }
   },
 
@@ -260,6 +263,14 @@ export default {
       showMenuDetailSetting: false,
       pageList: [],
       activePage: ''
+    }
+  },
+  watch: {
+    doSave (val) {
+      if (val === true) {
+        console.log(val)
+        this.savePage()
+      }
     }
   },
   created () {
@@ -532,6 +543,24 @@ export default {
       api.base.pageDetail(page.page_id)
         .then(res => {
           this.page = res.data.data
+          this.page.components = this.page.components.map(e => {
+            return JSON.parse(e)
+          })
+        })
+    },
+
+    /**
+     * 保存页面
+     */
+    savePage () {
+      console.log(this.page)
+      api.base.updatePageComponents(this.page)
+        .then(res => {
+          this.$store.dispatch('passSave', false)
+        })
+        .catch(err => {
+          console.error(err)
+          this.$store.dispatch('passSave', false)
         })
     }
     // ###########################methods#########################
