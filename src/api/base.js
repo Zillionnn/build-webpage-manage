@@ -59,6 +59,16 @@ export default{
       components: components,
       app_id: appId
     })
+  },
+
+  /**
+   * 更新页面名称
+   * @param {*} param0
+   */
+  updatePageName ({page_id, name}) {
+    return $http.put(url + `/api/app/page/${page_id}`, {
+      name: name
+    })
   }
 
 }

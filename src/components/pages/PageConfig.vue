@@ -495,13 +495,19 @@ export default {
     },
 
     /**
-     * 按下回车
+     * 按下回车 更新页面名称
      */
     confirmUpdate (page, e) {
       console.log(e)
       if (e[0].keyCode === 13) {
         page.edit = false
-        this.updatePage(page)
+        api.base.updatePageName(page)
+          .then(res => {
+            this.getPages()
+          })
+          .catch(err => {
+            console.error(err)
+          })
       }
     }
     // ###########################methods#########################
