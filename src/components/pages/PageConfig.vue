@@ -83,9 +83,43 @@
     </div>
     <!-- 配置 -->
     <div class="config-panel">
-      <div>
+      <div class="menu-detail" v-if="showMenuDetailSetting">
+          <div >
+            <i style="float:right;" class="icon-cross" @click="showMenuDetailSetting=false"></i>
+          </div>
+          <div>
+            <div>
+              <span>菜单名称</span>
+              <input v-model="formMenu.name">
+            </div>
+            <div>
+              链接打开方式
+              <el-radio>当前页面</el-radio>
+            </div>
+            <div>
+              <span>目标链接</span>
+              <div>
+                <el-select>
+                  <el-option label="当前应用页面"></el-option>
+                </el-select>
+              </div>
+              <div>
+                <ul>
+                  <li v-for="(item,index) in pageList" :key="index">
+                    {{item.name}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+      </div>
+      <!-- 菜单列表 -->
+      <div style="width: 240px; border: 1px solid;">
         <div class="tab-title">菜单配置</div>
-        <div  class="menu-list" v-for="(item,index) in menuList" :key="index">{{item.name}}</div>
+        <div  class="menu-list" v-for="(item,index) in menuList" :key="index">
+          {{item.name}} <i class="icon-cog-solid" @click="showMenuDetailSetting=true"></i>
+        </div>
         <button @click="addParentMenu()">新增主菜单</button>
       </div>
     </div>
@@ -188,7 +222,8 @@ export default {
       formMenu: {
         name: ''
       },
-      menuDialogVisible: false
+      menuDialogVisible: false,
+      showMenuDetailSetting: false
     }
   },
   created () {
@@ -402,9 +437,10 @@ export default {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 300px;
-  border: 1px solid #bbb;
   background: #ffffff;
+  display: flex;
+  justify-content: flex-end;
+
 }
 
 .side-bar {
@@ -447,5 +483,11 @@ export default {
   text-align:left;
   background: #cccccc;
   padding: 5px;
+}
+.menu-detail{
+  background: #ffffff;
+  border: 1px solid #bbb;
+  width: 300px;
+  height: 100%;
 }
 </style>
