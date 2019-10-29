@@ -39,9 +39,23 @@
           </div>
         </div>
         <div>
-          <div @click="showPages= !showPages" class="tab-title">页面</div>
-          <div v-show="showPages">
-            <div v-for="(item,index) in pages" :key="index">{{item}}</div>
+          <div @click="showPages= !showPages" class="tab-title">
+            页面
+            <i style="float:right;" class="icon-plus" @click="addPage"></i>
+          </div>
+          <div>
+            <div v-for="(item,index) in pageList" :key="index">
+              <div v-if="item.edit===false">
+                <span>{{item.name}}</span>
+                <span style="float:right;">
+                  <i class="icon-edit-solid" @click="resetPageEdit(item)"></i>
+                  <i class="icon-bin"></i>
+                </span>
+              </div>
+              <div v-else>
+                <input v-model="item.name" @keydown="confirmUpdate(item,arguments)" />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -57,7 +71,7 @@
       @drop="drop"
     >
       <!-- 页面上的组件 -->
-      <div v-for="(box, index) in page.elements" :key="index">
+      <div v-for="(box, index) in page.components" :key="index">
         <v-transform
           :ref="box.id"
           :id="box.id"
@@ -102,16 +116,22 @@
                 <el-option label="当前应用页面" :value="0"></el-option>
                 <el-option label="指定链接" :value="1"></el-option>
               </el-select>
-              <div v-if="formMenu.linkType===0" style="border: 1px solid;height: 500px; overflow:auto;">
+              <div
+                v-if="formMenu.linkType===0"
+                style="border: 1px solid;height: 500px; overflow:auto;"
+              >
                 <el-radio-group v-model="formMenu.link">
-                  <el-radio v-for="(item,index) in pageList" :key="index" :label="item.url">{{item.name}}</el-radio>
+                  <el-radio
+                    v-for="(item,index) in pageList"
+                    :key="index"
+                    :label="item.url"
+                  >{{item.name}}</el-radio>
                 </el-radio-group>
               </div>
               <div v-else>
-                <input v-model="formMenu.link" placeholder="http:// 开头"/>
+                <input v-model="formMenu.link" placeholder="http:// 开头" />
               </div>
             </div>
-
           </div>
 
           <div>
@@ -173,8 +193,9 @@ export default {
       showPages: false,
       // 页面
       page: {
+        appId: '',
         name: '',
-        elements: [
+        components: [
           {
             id: 'f1',
             x: 100,
@@ -285,9 +306,14 @@ export default {
     },
     getPages () {
       api.base
-        .appPageList(this.$route.params.id)
+        .appPageList(this.appId)
         .then(res => {
-          console.log(res.data.data)
+          this.pageList = res.data.data.map(e => {
+            return {
+              ...e,
+              edit: false
+            }
+          })
         })
         .catch(err => {
           console.error(err)
@@ -376,15 +402,14 @@ export default {
      * 添加页面
      */
     addPage (type) {
-      if (type === 'custom') {
-        this.page = {
-          name: '自定义页面',
-          elements: []
-        }
-        api.base.addPage(this.page).then(res => {
-          // this.page.page_id
-        })
+      this.page = {
+        appId: this.appId,
+        name: '自定义页面',
+        components: []
       }
+      api.base.addPage(this.page).then(res => {
+        this.getPages()
+      })
     },
 
     setLayout (p) {
@@ -426,7 +451,7 @@ export default {
      */
     openMenuDetail (menu) {
       this.showMenuDetailSetting = true
-      this.formMenu = {...menu}
+      this.formMenu = { ...menu }
       console.log(menu)
     },
 
@@ -435,7 +460,8 @@ export default {
      */
     updateMenu () {
       console.log(this.formMenu)
-      api.base.updateMenu(this.formMenu)
+      api.base
+        .updateMenu(this.formMenu)
         .then(res => {
           this.getAppMenu()
         })
@@ -448,13 +474,35 @@ export default {
      * 删除菜单
      */
     deleteMenu (menu) {
-      api.base.deleteMenu(menu.menu_id)
+      api.base
+        .deleteMenu(menu.menu_id)
         .then(res => {
           this.getAppMenu()
         })
         .catch(err => {
           console.error(err)
         })
+    },
+
+    /**
+     * 点击编辑 其他页面 编辑状态=false
+     */
+    resetPageEdit (page) {
+      this.pageList.map(e => {
+        e.edit = false
+      })
+      page.edit = true
+    },
+
+    /**
+     * 按下回车
+     */
+    confirmUpdate (page, e) {
+      console.log(e)
+      if (e[0].keyCode === 13) {
+        page.edit = false
+        this.updatePage(page)
+      }
     }
     // ###########################methods#########################
   }
@@ -512,6 +560,7 @@ export default {
   width: 220px;
   background: #ffffff;
   border-right: 1px solid #bbb;
+  padding: 10px;
 }
 .tab-title {
   padding: 10px;

@@ -53,8 +53,12 @@ export default{
     return $http.get(url + `/api/app/page/${id}`)
   },
 
-  addPage () {
-    return $http.post(url + '/api/createPage')
+  addPage ({name, components, appId}) {
+    return $http.post(url + '/api/createPage', {
+      name: name,
+      components: components,
+      app_id: appId
+    })
   }
 
 }
