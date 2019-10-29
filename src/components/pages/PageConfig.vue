@@ -188,6 +188,16 @@
             </el-select>
           </div>
         </div>
+          <div v-if="componentType==='image'">
+          <!-- {{currentBox}} -->
+          content:
+          <input v-model="currentBox.info.content" />
+          <div>
+            <span>图片源:</span>
+            <input v-model="currentBox.info.attrs.src"/>
+          </div>
+
+        </div>
       </div>
     </div>
 
@@ -440,6 +450,7 @@ export default {
               id: id
             },
             style: {
+              position: 'absolute',
               color: '#000000',
               fontSize: '12px'
             },
@@ -459,7 +470,9 @@ export default {
           info: {
             tagName: 'img',
             attrs: {
-              style: {},
+              style: {
+                position: 'absolute'
+              },
               width: '100%',
               height: '100%',
               src: ''
