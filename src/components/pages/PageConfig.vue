@@ -36,7 +36,7 @@
     <!-- 画布 操作界面 -->
     <div
       class="canvas-wrap"
-      :style="`margin-left: ${canvas.left}px;  margin-top: ${canvas.top}px;`"
+      :style="`margin-left: ${canvas.left}px;  margin-top: ${canvas.top-50}px;`"
       @dragover="allowDrop"
       @drop="drop"
     >
@@ -137,8 +137,8 @@ export default {
         y: 0
       },
       canvas: {
-        top: 60,
-        left: 300
+        top: 60 + 50,
+        left: 100
       },
       currentBox: {
         info: {
