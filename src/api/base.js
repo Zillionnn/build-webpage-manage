@@ -17,14 +17,21 @@ export default{
     return $http.delete(url + `/api/app/${id}`)
   },
 
+  addAppMenu ({appId, name}) {
+    return $http.post(url + `/api/app/menu/add`, {
+      app_id: appId,
+      name: name
+    })
+  },
+
   // 查看app pages
   appPageList (id) {
     return $http.get(url + `/api/app/page/${id}`)
   },
 
   // 查看app menus
-  appMenuList () {
-
+  appMenuList (appId) {
+    return $http.get(url + `/api/app/menu/${appId}`)
   },
   addPage () {
     return $http.post(url + '/api/createPage')

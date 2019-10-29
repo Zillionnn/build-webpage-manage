@@ -13,13 +13,29 @@
           <div @click="showNavigator= !showNavigator" class="tab-title">导航布局</div>
           <div v-show="showNavigator">
             <div class="layout-wrap">
-            <layout-thumbnail :type="'none'" :class="{'activeLayout':layout==='none'}" @change="setLayout('none')"/>
-            <layout-thumbnail :type="'top-nav'" :class="{'activeLayout':layout==='top-nav'}" @change="setLayout('top-nav')"/>
-            <layout-thumbnail :type="'left-nav'" :class="{'activeLayout':layout==='left-nav'}" @change="setLayout('left-nav')"/>
-            <layout-thumbnail :type="'left-top-nav'" :class="{'activeLayout':layout==='left-top-nav'}" @change="setLayout('left-top-nav')"/>
+              <layout-thumbnail
+                :type="'none'"
+                :class="{'activeLayout':layout==='none'}"
+                @change="setLayout('none')"
+              />
+              <layout-thumbnail
+                :type="'top-nav'"
+                :class="{'activeLayout':layout==='top-nav'}"
+                @change="setLayout('top-nav')"
+              />
+              <layout-thumbnail
+                :type="'left-nav'"
+                :class="{'activeLayout':layout==='left-nav'}"
+                @change="setLayout('left-nav')"
+              />
+              <layout-thumbnail
+                :type="'left-top-nav'"
+                :class="{'activeLayout':layout==='left-top-nav'}"
+                @change="setLayout('left-top-nav')"
+              />
             </div>
 
-            <button>页面设置</button>
+            <button @click="getAppMenu()">页面设置</button>
           </div>
         </div>
         <div>
@@ -69,12 +85,22 @@
     <div class="config-panel">
       <div>
         <div class="tab-title">菜单配置</div>
-        <div v-for="(item,index) in menuList" :key="index">
-          {{item.name}}
-        </div>
+        <div  class="menu-list" v-for="(item,index) in menuList" :key="index">{{item.name}}</div>
         <button @click="addParentMenu()">新增主菜单</button>
       </div>
     </div>
+
+    <el-dialog title :visible.sync="menuDialogVisible" width="30%">
+      <div>
+        <span>菜单名</span>
+        <input v-model="formMenu.name" />
+      </div>
+
+      <span slot="footer">
+        <el-button @click="menuDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="subMenu()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -90,6 +116,12 @@ export default {
   components: {
     VTransform,
     LayoutThumbnail
+  },
+  computed: {
+    appId () {
+      console.log(this.$route)
+      return this.$route.params.id
+    }
   },
   data () {
     return {
@@ -138,7 +170,7 @@ export default {
       },
       canvas: {
         top: 60 + 50,
-        left: 100
+        left: 300
       },
       currentBox: {
         info: {
@@ -152,7 +184,11 @@ export default {
 
       dragItem: null,
       selectedIdx: 0,
-      menuList: []
+      menuList: [],
+      formMenu: {
+        name: ''
+      },
+      menuDialogVisible: false
     }
   },
   created () {
@@ -310,11 +346,31 @@ export default {
       this.layout = p
     },
 
+    /**
+   * 获取app 菜单
+   */
+    getAppMenu () {
+      api.base.appMenuList(this.appId)
+        .then(res => {
+          this.menuList = res.data.data
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
     addParentMenu () {
-      this.menuList.push({
-        name: '',
-        link: ''
-      })
+      this.menuDialogVisible = true
+    },
+    subMenu () {
+      this.formMenu.appId = this.appId
+      api.base.addAppMenu(this.formMenu)
+        .then(res => {
+          this.getAppMenu()
+          this.menuDialogVisible = false
+        })
+        .catch(err => {
+          console.error(err)
+        })
     }
     // ###########################methods#########################
   }
@@ -377,13 +433,19 @@ export default {
   padding: 10px;
   text-align: left;
 }
-.layout-wrap{
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
+.layout-wrap {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
   padding: 20px;
 }
-.activeLayout{
+.activeLayout {
   border: 3px solid #00ccff;
+}
+
+.menu-list{
+  text-align:left;
+  background: #cccccc;
+  padding: 5px;
 }
 </style>
