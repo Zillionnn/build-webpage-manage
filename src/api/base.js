@@ -39,6 +39,14 @@ export default{
     })
   },
 
+  /**
+   *  删除
+   * @param {*} menu_id
+   */
+  deleteMenu (menu_id) {
+    return $http.delete(url + `/api/app/menu/${menu_id}`)
+  },
+
   // ############################# PAGE ##########################
   // 查看app pages
   appPageList (id) {

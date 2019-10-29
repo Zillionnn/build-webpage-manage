@@ -81,7 +81,7 @@
         </v-transform>
       </div>
     </div>
-    <!-- 配置 -->
+    <!-- ############################################### 配置 ######################################## -->
     <div class="config-panel">
       <div class="menu-detail" v-if="showMenuDetailSetting">
         <div>
@@ -126,6 +126,7 @@
         <div class="menu-list" v-for="(item,index) in menuList" :key="index">
           {{item.name}}
           <i class="icon-cog-solid" @click="openMenuDetail(item)"></i>
+          <i class="icon-bin" @click="deleteMenu(item)"></i>
         </div>
         <button @click="addParentMenu()">新增主菜单</button>
       </div>
@@ -164,6 +165,7 @@ export default {
       return this.$route.params.id
     }
   },
+
   data () {
     return {
       active: 0,
@@ -440,6 +442,19 @@ export default {
         .catch(err => {
           console.error(err)
         })
+    },
+
+    /**
+     * 删除菜单
+     */
+    deleteMenu (menu) {
+      api.base.deleteMenu(menu.menu_id)
+        .then(res => {
+          this.getAppMenu()
+        })
+        .catch(err => {
+          console.error(err)
+        })
     }
     // ###########################methods#########################
   }
@@ -522,5 +537,6 @@ export default {
   border: 1px solid #bbb;
   width: 300px;
   height: 100%;
+  padding: 10px;
 }
 </style>
