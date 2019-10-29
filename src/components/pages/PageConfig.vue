@@ -84,41 +84,48 @@
     <!-- 配置 -->
     <div class="config-panel">
       <div class="menu-detail" v-if="showMenuDetailSetting">
-          <div >
-            <i style="float:right;" class="icon-cross" @click="showMenuDetailSetting=false"></i>
-          </div>
+        <div>
+          <span>菜单配置</span>
+          <i style="float:right;" class="icon-cross" @click="showMenuDetailSetting=false"></i>
+        </div>
+        <br />
+        <div>
           <div>
+            <span>菜单名称</span>
+            <input v-model="formMenu.name" />
+          </div>
+
+          <div>
+            <span>目标链接</span>
             <div>
-              <span>菜单名称</span>
-              <input v-model="formMenu.name">
-            </div>
-            <div>
-              链接打开方式
-              <el-radio>当前页面</el-radio>
-            </div>
-            <div>
-              <span>目标链接</span>
-              <div>
-                <el-select>
-                  <el-option label="当前应用页面"></el-option>
-                </el-select>
+              <el-select v-model="formMenu.linkType">
+                <el-option label="当前应用页面" :value="0"></el-option>
+                <el-option label="指定链接" :value="1"></el-option>
+              </el-select>
+              <div v-if="formMenu.linkType===0" style="border: 1px solid;height: 500px; overflow:auto;">
+                <el-radio-group v-model="formMenu.link">
+                  <el-radio v-for="(item,index) in pageList" :key="index" :label="item.url">{{item.name}}</el-radio>
+                </el-radio-group>
               </div>
-              <div>
-                <ul>
-                  <li v-for="(item,index) in pageList" :key="index">
-                    {{item.name}}
-                  </li>
-                </ul>
+              <div v-else>
+                <input v-model="formMenu.link" placeholder="http:// 开头"/>
               </div>
             </div>
 
           </div>
+
+          <div>
+            <button @click="updateMenu()">确定</button>
+            <button>取消</button>
+          </div>
+        </div>
       </div>
       <!-- 菜单列表 -->
       <div style="width: 240px; border: 1px solid;">
         <div class="tab-title">菜单配置</div>
-        <div  class="menu-list" v-for="(item,index) in menuList" :key="index">
-          {{item.name}} <i class="icon-cog-solid" @click="showMenuDetailSetting=true"></i>
+        <div class="menu-list" v-for="(item,index) in menuList" :key="index">
+          {{item.name}}
+          <i class="icon-cog-solid" @click="openMenuDetail(item)"></i>
         </div>
         <button @click="addParentMenu()">新增主菜单</button>
       </div>
@@ -223,7 +230,8 @@ export default {
         name: ''
       },
       menuDialogVisible: false,
-      showMenuDetailSetting: false
+      showMenuDetailSetting: false,
+      pageList: []
     }
   },
   created () {
@@ -382,10 +390,11 @@ export default {
     },
 
     /**
-   * 获取app 菜单
-   */
+     * 获取app 菜单
+     */
     getAppMenu () {
-      api.base.appMenuList(this.appId)
+      api.base
+        .appMenuList(this.appId)
         .then(res => {
           this.menuList = res.data.data
         })
@@ -398,10 +407,35 @@ export default {
     },
     subMenu () {
       this.formMenu.appId = this.appId
-      api.base.addAppMenu(this.formMenu)
+      api.base
+        .addAppMenu(this.formMenu)
         .then(res => {
           this.getAppMenu()
           this.menuDialogVisible = false
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+
+    /**
+     * 菜单详情设置
+     * link etc
+     */
+    openMenuDetail (menu) {
+      this.showMenuDetailSetting = true
+      this.formMenu = {...menu}
+      console.log(menu)
+    },
+
+    /**
+     * 更新一个菜单
+     */
+    updateMenu () {
+      console.log(this.formMenu)
+      api.base.updateMenu(this.formMenu)
+        .then(res => {
+          this.getAppMenu()
         })
         .catch(err => {
           console.error(err)
@@ -440,7 +474,6 @@ export default {
   background: #ffffff;
   display: flex;
   justify-content: flex-end;
-
 }
 
 .side-bar {
@@ -479,12 +512,12 @@ export default {
   border: 3px solid #00ccff;
 }
 
-.menu-list{
-  text-align:left;
+.menu-list {
+  text-align: left;
   background: #cccccc;
   padding: 5px;
 }
-.menu-detail{
+.menu-detail {
   background: #ffffff;
   border: 1px solid #bbb;
   width: 300px;
