@@ -45,7 +45,7 @@
           </div>
           <div>
             <div v-for="(item,index) in pageList" :key="index">
-              <div v-if="item.edit===false">
+              <div v-if="item.edit===false" @click="selectedPage(item)" :class="{'active-page':activePage===item.page_id}">
                 <span>{{item.name}}</span>
                 <span style="float:right;">
                   <i class="icon-edit-solid" @click="resetPageEdit(item)"></i>
@@ -61,6 +61,10 @@
       </div>
       <div v-show="active===1">
         <button>组件</button>
+
+          <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
+          <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
+
       </div>
     </div>
     <!-- 画布 操作界面 -->
@@ -254,7 +258,8 @@ export default {
       },
       menuDialogVisible: false,
       showMenuDetailSetting: false,
-      pageList: []
+      pageList: [],
+      activePage: ''
     }
   },
   created () {
@@ -350,16 +355,22 @@ export default {
     allowDrop (e) {
       e.preventDefault()
     },
-
+    /**
+     * 开始拖动组件
+     */
     startDrag (p) {
       this.dragItem = p
     },
+
+    /**
+     * 组件拖放到 画布
+     */
     drop () {
       console.log(this.dragItem)
       const id = 't' + parseInt(Math.random() * 100)
-      let elements = this.page.elements
+      let components = this.page.components
       if (this.dragItem === 'text') {
-        elements.push({
+        components.push({
           id: id,
           x: 0,
           y: 0,
@@ -376,7 +387,7 @@ export default {
         })
       }
       if (this.dragItem === 'pic') {
-        elements.push({
+        components.push({
           id: 'f1',
           x: 0,
           y: 0,
@@ -501,7 +512,8 @@ export default {
       console.log(e)
       if (e[0].keyCode === 13) {
         page.edit = false
-        api.base.updatePageName(page)
+        api.base
+          .updatePageName(page)
           .then(res => {
             this.getPages()
           })
@@ -509,6 +521,18 @@ export default {
             console.error(err)
           })
       }
+    },
+
+    /**
+     * 选中页面 显示 该页面的组件
+     *  查询页面detail
+     */
+    selectedPage (page) {
+      this.activePage = page.page_id
+      api.base.pageDetail(page.page_id)
+        .then(res => {
+          this.page = res.data.data
+        })
     }
     // ###########################methods#########################
   }
@@ -593,5 +617,8 @@ export default {
   width: 300px;
   height: 100%;
   padding: 10px;
+}
+.active-page{
+  background: #00ccff;
 }
 </style>

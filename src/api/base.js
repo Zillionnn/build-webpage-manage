@@ -69,6 +69,10 @@ export default{
     return $http.put(url + `/api/app/page/${page_id}`, {
       name: name
     })
+  },
+
+  pageDetail (pageId) {
+    return $http.get(url + `/api/app/page/detail/${pageId}`)
   }
 
 }
