@@ -45,7 +45,11 @@
           </div>
           <div>
             <div v-for="(item,index) in pageList" :key="index">
-              <div v-if="item.edit===false" @click="selectedPage(item)" :class="{'active-page':activePage===item.page_id}">
+              <div
+                v-if="item.edit===false"
+                @click="selectedPage(item)"
+                :class="{'active-page':activePage===item.page_id}"
+              >
                 <span>{{item.name}}</span>
                 <span style="float:right;">
                   <i class="icon-edit-solid" @click="resetPageEdit(item)"></i>
@@ -62,9 +66,8 @@
       <div v-show="active===1">
         <button>组件</button>
 
-          <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
-          <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
-
+        <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
+        <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
       </div>
     </div>
     <!-- 画布 操作界面 -->
@@ -145,7 +148,7 @@
         </div>
       </div>
       <!-- 菜单列表 -->
-      <div style="width: 240px; border: 1px solid;">
+      <div v-if="configType==='menu'" class="config_">
         <div class="tab-title">菜单配置</div>
         <div class="menu-list" v-for="(item,index) in menuList" :key="index">
           {{item.name}}
@@ -153,6 +156,38 @@
           <i class="icon-bin" @click="deleteMenu(item)"></i>
         </div>
         <button @click="addParentMenu()">新增主菜单</button>
+      </div>
+      <div v-if="configType==='component'" class="config_">
+        x:
+        <input v-model="currentBox.x" />
+        y:
+        <input v-model="currentBox.y" />
+        宽:
+        <input v-model="currentBox.width" />
+        高:
+        <input v-model="currentBox.height" />
+        角度:
+        <input v-model="currentBox.rotate" />
+        <div v-if="componentType==='text'">
+          <!-- {{currentBox}} -->
+          content:
+          <input v-model="currentBox.info.content" />
+          <div>
+            <span>颜色:</span>
+            <el-color-picker v-model="currentBox.info.style.color"></el-color-picker>
+          </div>
+
+          <div>
+            <span>字号:</span>
+            <el-select v-model="currentBox.info.style.fontSize">
+              <el-option
+                v-for="(item,index) in fontSizeList"
+                :key="index"
+                :value="item.value"
+              >{{item.name}}</el-option>
+            </el-select>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -172,6 +207,7 @@
 
 <script>
 import * as api from '@/api'
+import env from '@/config/env'
 import VTransform from '@/components/common/VTransform.vue'
 import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
 
@@ -241,7 +277,7 @@ export default {
       },
       canvas: {
         top: 60 + 50,
-        left: 300
+        left: 350
       },
       currentBox: {
         info: {
@@ -252,6 +288,7 @@ export default {
       },
       layout: '',
       configType: '',
+      componentType: '',
 
       dragItem: null,
       selectedIdx: 0,
@@ -262,7 +299,8 @@ export default {
       menuDialogVisible: false,
       showMenuDetailSetting: false,
       pageList: [],
-      activePage: ''
+      activePage: '',
+      fontSizeList: env.fontSizeList
     }
   },
   watch: {
@@ -293,7 +331,8 @@ export default {
             createElement(
               this.componentInfo.tagName,
               {
-                attrs: this.componentInfo.attrs
+                attrs: this.componentInfo.attrs,
+                style: this.componentInfo.style
               },
               this.componentInfo.content
             )
@@ -341,7 +380,7 @@ export default {
      */
     keyEvent (event) {
       if (event.keyCode === 46) {
-        this.page.elements.splice(this.selectedIdx, 1)
+        this.page.components.splice(this.selectedIdx, 1)
       }
     },
 
@@ -350,6 +389,11 @@ export default {
      */
     setSelect (index) {
       this.selectedIdx = index
+      this.configType = 'component'
+
+      this.currentBox = this.page.components[index]
+      console.log(this.currentBox.type)
+      this.componentType = this.currentBox.type
       console.log('index', index)
     },
     update (box, args) {
@@ -379,6 +423,7 @@ export default {
     drop () {
       console.log(this.dragItem)
       const id = 't' + parseInt(Math.random() * 100)
+      console.log(this.page)
       let components = this.page.components
       if (this.dragItem === 'text') {
         components.push({
@@ -388,10 +433,15 @@ export default {
           width: 100,
           height: 100,
           rotate: 0,
+          type: 'text',
           info: {
             tagName: 'div',
             attrs: {
               id: id
+            },
+            style: {
+              color: '#000000',
+              fontSize: '12px'
             },
             content: '文字'
           }
@@ -405,6 +455,7 @@ export default {
           width: 100,
           height: 100,
           rotate: 0,
+          type: 'image',
           info: {
             tagName: 'img',
             attrs: {
@@ -442,6 +493,7 @@ export default {
      * 获取app 菜单
      */
     getAppMenu () {
+      this.configType = 'menu'
       api.base
         .appMenuList(this.appId)
         .then(res => {
@@ -540,13 +592,12 @@ export default {
      */
     selectedPage (page) {
       this.activePage = page.page_id
-      api.base.pageDetail(page.page_id)
-        .then(res => {
-          this.page = res.data.data
-          this.page.components = this.page.components.map(e => {
-            return JSON.parse(e)
-          })
+      api.base.pageDetail(page.page_id).then(res => {
+        this.page = res.data.data
+        this.page.components = this.page.components.map(e => {
+          return JSON.parse(e)
         })
+      })
     },
 
     /**
@@ -554,7 +605,8 @@ export default {
      */
     savePage () {
       console.log(this.page)
-      api.base.updatePageComponents(this.page)
+      api.base
+        .updatePageComponents(this.page)
         .then(res => {
           this.$store.dispatch('passSave', false)
         })
@@ -647,7 +699,12 @@ export default {
   height: 100%;
   padding: 10px;
 }
-.active-page{
+.active-page {
   background: #00ccff;
+}
+.config_ {
+  width: 240px;
+  border: 1px solid;
+  padding: 10px;
 }
 </style>
