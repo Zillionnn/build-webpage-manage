@@ -9,7 +9,7 @@
         class="content-op"
         :style="'opacity:'+opacity"
         @mousedown="setDrag(0,$event)"
-        @mouseup="setDrag(1)"
+        @mouseup="setDrag(1,$event)"
         @mousemove="moveCointainer"
       >
         <slot />
@@ -206,13 +206,18 @@ export default {
 
     // 是否可以拖动
     setDrag (p, event) {
-      this.canMove = p === 0
-      this.toggleOperates(true)
-      this.$emit('select')
-      if (this.canMove) {
-        this.offsetX = this.mousePosition.x - this.x - this.canvas.left
-        this.offsetY = this.mousePosition.y - this.y - this.canvas.top
-        console.log(this.offsetX, this.offsetY, ',,,', event.offsetX, event.offsetY)
+      console.log(event)
+      if (event.button === 0) {
+        this.canMove = p === 0
+        this.toggleOperates(true)
+        this.$emit('select')
+        if (this.canMove) {
+          this.offsetX = this.mousePosition.x - this.x - this.canvas.left
+          this.offsetY = this.mousePosition.y - this.y - this.canvas.top
+          console.log(this.offsetX, this.offsetY, ',,,', event.offsetX, event.offsetY)
+        }
+      } else {
+        console.log('right button')
       }
     },
 
