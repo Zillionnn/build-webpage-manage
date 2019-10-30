@@ -81,6 +81,17 @@ export default{
 
   deletePage (pageId) {
     return $http.delete(url + `/api/app/page/${pageId}`)
+  },
+
+  /**
+   * app 信息
+   */
+  getAppInfo (appId) {
+    return $http.get(url + `/api/app/${appId}`)
+  },
+
+  updateAppInfo (app) {
+    return $http.put(url + `/api/app/${app.id}`, app)
   }
 
 }

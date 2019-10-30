@@ -241,6 +241,7 @@ export default {
 
   data () {
     return {
+      appInfo: null,
       active: 0,
       showNavigator: false,
       showPages: false,
@@ -317,11 +318,12 @@ export default {
     doSave (val) {
       if (val === true) {
         console.log(val)
-        this.savePage()
+        this.saveApp()
       }
     }
   },
   created () {
+    this.getAppInfo(this.appId)
     this.getPages()
     // console.log('###########TEMPLATE PAGE################')
     this.listenEvent()
@@ -361,14 +363,30 @@ export default {
     })
   },
   methods: {
+    /**
+     * 应用信息
+     */
+    getAppInfo () {
+      api.base.getAppInfo(this.appId)
+        .then(res => {
+          this.appInfo = res.data.data
+          this.layout = this.appInfo.layout
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+
     listenEvent () {
       document.addEventListener('mousemove', this.getMousePosition)
       document.addEventListener('keyup', this.keyEvent)
     },
+
     getMousePosition (event) {
       this.mousePosition.x = event.x
       this.mousePosition.y = event.y
     },
+
     getPages () {
       api.base
         .appPageList(this.appId)
@@ -627,6 +645,28 @@ export default {
           console.error(err)
           this.$store.dispatch('passSave', false)
         })
+    },
+
+    /**
+     * 保存页面布局
+     */
+    saveAppLayout () {
+      this.appInfo.layout = this.layout
+      api.base.updateAppInfo(this.appInfo)
+        .then(res => {
+          this.getAppInfo()
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+
+    /**
+     * 保存app
+     */
+    saveApp () {
+      this.savePage()
+      this.saveAppLayout()
     },
 
     /**
