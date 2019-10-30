@@ -70,13 +70,16 @@
         <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
       </div>
     </div>
-    <!-- 画布 操作界面 -->
-    <div
+    <!-- ###################################画布 操作界面 ########################################-->
+  <div class="canvas-body">
+  <div
       class="canvas-wrap"
-      :style="`margin-left: ${canvas.left}px;  margin-top: ${canvas.top-50}px;`"
+      :style="`margin-left: ${canvas.left-300}px;  margin-top: ${canvas.top-50}px;`"
       @dragover="allowDrop"
       @drop="drop"
     >
+     <div class="top-nav"></div>
+     <div class="left-nav"></div>
       <!-- 页面上的组件 -->
       <div v-for="(box, index) in page.components" :key="index">
         <v-transform
@@ -102,6 +105,9 @@
         </v-transform>
       </div>
     </div>
+  </div>
+
+
     <!-- ############################################### 配置 ######################################## -->
     <div class="config-panel">
       <div class="menu-detail" v-if="showMenuDetailSetting">
@@ -287,8 +293,10 @@ export default {
         y: 0
       },
       canvas: {
-        top: 60 + 50,
-        left: 350
+        // 画布到上策距离
+        top: 60,
+        // 画布到左侧距离
+        left: 400
       },
       currentBox: {
         info: {
@@ -723,8 +731,8 @@ export default {
 }
 .canvas-wrap {
   border: 1px solid;
-  width: 900px;
-  height: 800px;
+  width: 1920px;
+  height: 1080px;
   position: relative;
 }
 .config-panel {
@@ -760,6 +768,16 @@ export default {
   border-right: 1px solid #bbb;
   padding: 10px;
 }
+.canvas-body{
+  position: absolute;
+  top: 0;
+  left: 297px;
+  bottom: 0;
+  right:260px;
+  background: #f1f1f1;
+  overflow:auto;
+}
+
 .tab-title {
   padding: 10px;
   text-align: left;
@@ -793,5 +811,21 @@ export default {
   width: 240px;
   border: 1px solid;
   padding: 10px;
+}
+.top-nav{
+  background: #000000;
+  width: 100%;
+  height: 50px;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+.left-nav{
+   background: #000000;
+  width: 200px;  
+  position: absolute;
+  top: 50px;
+  left: 0px;
+  bottom: 0;
 }
 </style>
