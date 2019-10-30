@@ -77,6 +77,10 @@ export default{
 
   updatePageComponents (page) {
     return $http.put(url + `/api/app/page/components/${page.page_id}`, page)
+  },
+
+  deletePage (pageId) {
+    return $http.delete(url + `/api/app/page/${pageId}`)
   }
 
 }

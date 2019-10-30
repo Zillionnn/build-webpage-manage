@@ -53,7 +53,7 @@
                 <span>{{item.name}}</span>
                 <span style="float:right;">
                   <i class="icon-edit-solid" @click="resetPageEdit(item)"></i>
-                  <i class="icon-bin"></i>
+                  <i class="icon-bin" @click="deletePage(item)"></i>
                 </span>
               </div>
               <div v-else>
@@ -627,6 +627,40 @@ export default {
           console.error(err)
           this.$store.dispatch('passSave', false)
         })
+    },
+
+    /**
+     * 删除页面
+     */
+    deletePage (page) {
+      this.$confirm('删除后将无法恢复', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        api.base.deletePage(page.page_id)
+          .then(res => {
+            this.getPages()
+          })
+          .catch(err => {
+            this.$message({
+              type: 'error',
+              message: err
+            })
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+
+    /**
+     * 组件上的右键菜单
+     */
+    rightBtnMenu (event) {
+      console.log(event)
     }
     // ###########################methods#########################
   }
