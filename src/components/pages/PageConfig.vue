@@ -251,6 +251,8 @@ import * as api from '@/api'
 import env from '@/config/env'
 import VTransform from '@/components/common/VTransform.vue'
 import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
+// eslint-disable-next-line no-unused-vars
+import {$http} from '@/service/requestService.js'
 
 import Vue from 'vue'
 
@@ -359,6 +361,7 @@ export default {
     this.getAppInfo(this.appId)
     this.getAppMenu()
     this.getPages()
+    const _self = this
     // console.log('###########TEMPLATE PAGE################')
     this.listenEvent()
     Vue.component('v-render', {
@@ -385,6 +388,7 @@ export default {
                   style: this.componentInfo.style
                 },
                 this.componentInfo.content
+                // _self.returnChild(this.componentInfo.content)
               )
             ]
           )
@@ -404,7 +408,7 @@ export default {
                   attrs: this.componentInfo.attrs,
                   style: this.componentInfo.style
                 },
-                this.componentInfo.content
+                _self.returnChild(this.componentInfo)
               )
             ]
           )
@@ -422,6 +426,19 @@ export default {
     })
   },
   methods: {
+    async returnChild (info) {
+      if (info.hasOwnProperty('content_value')) {
+        const method = info.content_value.method
+        const url = info.content_value.url
+        const r = await $http[method](url)
+        console.log(r)
+
+        return r.data
+      } else {
+        console.log(info)
+        return info.content + ',iu8t8'
+      }
+    },
     /**
      * 应用信息
      */
@@ -539,7 +556,12 @@ export default {
               color: '#000000',
               fontSize: '12px'
             },
-            content: '文字'
+            content: '文字',
+            content_value: {
+              url: 'http://106.12.40.54:2999/api/v1/text/time',
+              method: 'get',
+              data: null
+            }
           }
         })
       }

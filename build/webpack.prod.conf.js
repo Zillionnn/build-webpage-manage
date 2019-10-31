@@ -43,7 +43,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     },
     sourceMap: config.build.productionSourceMap,
     parallel: true
-  }),*/
+  }), */
     // extract css into its own file
     new ExtractTextPlugin({
       filename: 'css/[name].[hash].css'
@@ -111,7 +111,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       async: 'vendor-async',
       children: true,
       minChunks: 3
-    }),*/
+    }), */
 
     // copy custom static assets
     new CopyWebpackPlugin([
@@ -151,20 +151,21 @@ const webpackConfig = merge(baseWebpackConfig, {
       chunks: 'async',
       // 大于30KB才单独分离成chunk
       minSize: 30000,
-      // maxSize: 80000,
+      // 最大800KB
+      maxSize: 800000,
       maxAsyncRequests: 5,
       maxInitialRequests: 3,
       name: true,
       cacheGroups: {
         default: {
           priority: -20,
-          reuseExistingChunk: true,
+          reuseExistingChunk: true
         },
         vendors: {
           name: 'vendors',
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
-          chunks: "all"
+          chunks: 'all'
         }
         // 'element-ui': {
         //   name: 'element-ui',

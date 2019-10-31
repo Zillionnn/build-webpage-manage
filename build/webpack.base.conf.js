@@ -4,7 +4,9 @@ const utils = require('./utils')
 const config = require('../config')
 const vueLoaderConfig = require('./vue-loader.conf')
 // 解决报错：vue-loader was used without the corresponding plugin. Make sure to include VueLoaderPlugin in your webpack config.
-const { VueLoaderPlugin } = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader')
+// require('')
+require('babel-polyfill')
 
 function resolve (dir) {
   return path.join(__dirname, '..', dir)
@@ -23,9 +25,8 @@ const createLintingRule = () => ({
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: {
-    app: './src/main.js'
-  },
+  entry: ['babel-polyfill', './src/main.js'],
+
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
@@ -37,7 +38,7 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      '@': resolve('src')
     }
   },
   module: {
@@ -81,7 +82,7 @@ module.exports = {
   },
   plugins: [
     // 添加VueLoaderPlugin，以响应vue-loader
-    new VueLoaderPlugin(),
+    new VueLoaderPlugin()
   ],
   node: {
     // prevent webpack from injecting useless setImmediate polyfill because Vue
