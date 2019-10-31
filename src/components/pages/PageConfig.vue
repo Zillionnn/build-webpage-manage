@@ -49,9 +49,10 @@
                 v-if="item.edit===false"
                 @click="selectedPage(item)"
                 :class="{'active-page':activePage===item.page_id}"
+                style="display:flex;justify-content:space-between;"
               >
                 <span>{{item.name}}</span>
-                <span style="float:right;">
+                <span>
                   <i class="icon-edit-solid" @click="resetPageEdit(item)"></i>
                   <i class="icon-bin" @click="deletePage(item)"></i>
                 </span>
@@ -71,42 +72,47 @@
       </div>
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
-  <div class="canvas-body">
-  <div
-      class="canvas-wrap"
-      :style="`margin-left: ${canvas.left-300}px;  margin-top: ${canvas.top-50}px;`"
-      @dragover="allowDrop"
-      @drop="drop"
-    >
-     <div class="top-nav"></div>
-     <div class="left-nav"></div>
-      <!-- 页面上的组件 -->
-      <div v-for="(box, index) in page.components" :key="index">
-        <v-transform
-          :ref="box.id"
-          :id="box.id"
-          :canvas="canvas"
-          :y="box.y"
-          :x="box.x"
-          :width="box.width"
-          :height="box.height"
-          :rotate="box.rotate"
-          @update="update(box,arguments)"
-          @select="setSelect(index)"
-        >
-          <div :id="box.id" style="width:100%;height:100%;">
-            <v-render
-              :componentInfo="box.info"
-              :tag="'span'"
-              :attrs="box.info.attrs"
-              :content="box.info.content"
-            ></v-render>
-          </div>
-        </v-transform>
+    <div class="canvas-body">
+      <div
+        class="canvas-wrap"
+        :style="`margin-left: ${canvas.left-300}px;  margin-top: ${canvas.top-50}px;`"
+        @dragover="allowDrop"
+        @drop="drop"
+      >
+        <div class="top-nav"></div>
+        <div class="left-nav">
+          <div
+            class="left-nav-menu-item"
+            v-for="(item,index) in menuList"
+            :key="index"
+          >{{item.name}}</div>
+        </div>
+        <!-- 页面上的组件 -->
+        <div v-for="(box, index) in page.components" :key="index">
+          <v-transform
+            :ref="box.id"
+            :id="box.id"
+            :canvas="canvas"
+            :y="box.y"
+            :x="box.x"
+            :width="box.width"
+            :height="box.height"
+            :rotate="box.rotate"
+            @update="update(box,arguments)"
+            @select="setSelect(index)"
+          >
+            <div :id="box.id" style="width:100%;height:100%;">
+              <v-render
+                :componentInfo="box.info"
+                :tag="'span'"
+                :attrs="box.info.attrs"
+                :content="box.info.content"
+              ></v-render>
+            </div>
+          </v-transform>
+        </div>
       </div>
     </div>
-  </div>
-
 
     <!-- ############################################### 配置 ######################################## -->
     <div class="config-panel">
@@ -133,16 +139,24 @@
                 v-if="formMenu.linkType===0"
                 style="border: 1px solid;height: 500px; overflow:auto;"
               >
-                <el-radio-group v-model="formMenu.link">
+                <!-- <el-radio-group v-model="formMenu.link">
                   <el-radio
                     v-for="(item,index) in pageList"
                     :key="index"
                     :label="item.url"
                   >{{item.name}}</el-radio>
+                </el-radio-group>-->
+                <el-radio-group v-model="formMenu.link">
+                   <el-radio
+                   style="display:block;padding:10px;"
+                    v-for="(item,index) in pageList"
+                    :key="index"
+                    :label="item.page_id"
+                  >{{item.name}}</el-radio>
                 </el-radio-group>
               </div>
               <div v-else>
-                <input v-model="formMenu.link" placeholder="http:// 开头" />
+                <input v-model="formMenu.link" placeholder="http:// 或 https:// 开头" />
               </div>
             </div>
           </div>
@@ -194,15 +208,14 @@
             </el-select>
           </div>
         </div>
-          <div v-if="componentType==='image'">
+        <div v-if="componentType==='image'">
           <!-- {{currentBox}} -->
           content:
           <input v-model="currentBox.info.content" />
           <div>
             <span>图片源:</span>
-            <input v-model="currentBox.info.attrs.src"/>
+            <input v-model="currentBox.info.attrs.src" />
           </div>
-
         </div>
       </div>
     </div>
@@ -332,6 +345,7 @@ export default {
   },
   created () {
     this.getAppInfo(this.appId)
+    this.getAppMenu()
     this.getPages()
     // console.log('###########TEMPLATE PAGE################')
     this.listenEvent()
@@ -375,7 +389,8 @@ export default {
      * 应用信息
      */
     getAppInfo () {
-      api.base.getAppInfo(this.appId)
+      api.base
+        .getAppInfo(this.appId)
         .then(res => {
           this.appInfo = res.data.data
           this.layout = this.appInfo.layout
@@ -464,8 +479,8 @@ export default {
       if (this.dragItem === 'text') {
         components.push({
           id: id,
-          x: 0,
-          y: 0,
+          x: 300,
+          y: 300,
           width: 100,
           height: 100,
           rotate: 0,
@@ -487,8 +502,8 @@ export default {
       if (this.dragItem === 'pic') {
         components.push({
           id: 'f1',
-          x: 0,
-          y: 0,
+          x: 300,
+          y: 300,
           width: 100,
           height: 100,
           rotate: 0,
@@ -542,6 +557,7 @@ export default {
           console.error(err)
         })
     },
+
     addParentMenu () {
       this.menuDialogVisible = true
     },
@@ -660,7 +676,8 @@ export default {
      */
     saveAppLayout () {
       this.appInfo.layout = this.layout
-      api.base.updateAppInfo(this.appInfo)
+      api.base
+        .updateAppInfo(this.appInfo)
         .then(res => {
           this.getAppInfo()
         })
@@ -685,23 +702,26 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        api.base.deletePage(page.page_id)
-          .then(res => {
-            this.getPages()
-          })
-          .catch(err => {
-            this.$message({
-              type: 'error',
-              message: err
-            })
-          })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
       })
+        .then(() => {
+          api.base
+            .deletePage(page.page_id)
+            .then(res => {
+              this.getPages()
+            })
+            .catch(err => {
+              this.$message({
+                type: 'error',
+                message: err
+              })
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
     },
 
     /**
@@ -768,19 +788,20 @@ export default {
   border-right: 1px solid #bbb;
   padding: 10px;
 }
-.canvas-body{
+.canvas-body {
   position: absolute;
   top: 0;
   left: 297px;
   bottom: 0;
-  right:260px;
+  right: 260px;
   background: #f1f1f1;
-  overflow:auto;
+  overflow: auto;
 }
 
 .tab-title {
   padding: 10px;
   text-align: left;
+  cursor: pointer;
 }
 .layout-wrap {
   display: flex;
@@ -812,7 +833,7 @@ export default {
   border: 1px solid;
   padding: 10px;
 }
-.top-nav{
+.top-nav {
   background: #000000;
   width: 100%;
   height: 50px;
@@ -820,12 +841,17 @@ export default {
   top: 0px;
   left: 0px;
 }
-.left-nav{
-   background: #000000;
-  width: 200px;  
+.left-nav {
+  background: #000000;
+  width: 200px;
   position: absolute;
   top: 50px;
   left: 0px;
   bottom: 0;
+  color: #ffffff;
+}
+.left-nav-menu-item {
+  padding: 10px;
+  text-align: center;
 }
 </style>

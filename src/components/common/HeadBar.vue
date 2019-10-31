@@ -53,5 +53,6 @@ export default {
 a{
     text-decoration: none;
     color: #bbb;
+    cursor:pointer;
 }
 </style>
