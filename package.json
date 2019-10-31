@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "echarts": "^4.4.0",
     "vue": "^2.6.10",
+    "vue-echarts": "^4.0.4",
     "vue-free-transform": "^1.0.11",
     "vue-hoperun-icon": "^1.0.25",
     "vue-router": "^3.0.1",

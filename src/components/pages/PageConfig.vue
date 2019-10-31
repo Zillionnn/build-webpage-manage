@@ -3,8 +3,6 @@
     <div class="side-bar">
       <div class="item" @click="active=0">页面</div>
       <div class="item" @click="active=1">组件</div>
-      <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
-      <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
     </div>
 
     <div class="side-bar-menu">
@@ -69,6 +67,7 @@
 
         <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
         <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
+        <div class="component-drag" draggable="true" @dragstart="startDrag('chart-bar')">柱状图</div>
       </div>
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
@@ -147,8 +146,8 @@
                   >{{item.name}}</el-radio>
                 </el-radio-group>-->
                 <el-radio-group v-model="formMenu.link">
-                   <el-radio
-                   style="display:block;padding:10px;"
+                  <el-radio
+                    style="display:block;padding:10px;"
                     v-for="(item,index) in pageList"
                     :key="index"
                     :label="item.page_id"
@@ -212,6 +211,17 @@
           <!-- {{currentBox}} -->
           content:
           <input v-model="currentBox.info.content" />
+          <div>
+            <span>图片源:</span>
+            <input v-model="currentBox.info.attrs.src" />
+          </div>
+        </div>
+        <div v-if="componentType==='chart-bar'">
+          <!-- {{currentBox}} -->
+          width:
+          <input v-model="currentBox.info.style.width" />
+           height:
+          <input v-model="currentBox.info.style.height" />
           <div>
             <span>图片源:</span>
             <input v-model="currentBox.info.attrs.src" />
@@ -352,7 +362,6 @@ export default {
     Vue.component('v-render', {
       render: function (createElement) {
         console.log('componentInfo', this.componentInfo)
-
         return createElement(
           'div',
           {
@@ -365,7 +374,11 @@ export default {
             createElement(
               this.componentInfo.tagName,
               {
-                attrs: this.componentInfo.attrs,
+                attrs: {
+                  // 为了echart 的属性
+                  options: {...this.componentInfo.options},
+                  ...this.componentInfo.attrs
+                },
                 style: this.componentInfo.style
               },
               this.componentInfo.content
@@ -448,14 +461,21 @@ export default {
       console.log('index', index)
     },
     update (box, args) {
+      console.log(box)
       const conf = args[0]
       this.currentBox = box
       box = Object.assign(box, conf)
+      console.log(box)
       if (conf.x) {
         box.x = conf.x - this.canvas.left
       }
       if (conf.y) {
         box.y = conf.y - this.canvas.top
+      }
+      if (box.type === 'chart-bar') {
+        box.info.style.width = box.width + 'px'
+        box.info.style.height = box.height + 'px'
+        console.log('currentBox>>', this.currentBox)
       }
     },
     allowDrop (e) {
@@ -522,7 +542,108 @@ export default {
         })
       }
 
-      this.$refs[id].toggleOperates(true)
+      //  <chart :options="ToolStatisticsChart"
+      //              ref="chart"
+      //              :autoResize="true"
+      //              style="width: 3900px; height: 240px;" />
+      if (this.dragItem === 'chart-bar') {
+        components.push({
+          id: id,
+          x: 300,
+          y: 300,
+          width: 350,
+          height: 300,
+          rotate: 0,
+          type: 'chart-bar',
+
+          info: {
+            tagName: 'v-echart',
+            style: {
+              position: 'absolute',
+              width: '350px',
+              height: '300px'
+            },
+            options: {
+              color: ['#3398DB'],
+              tooltip: {
+                trigger: 'axis',
+                axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                  type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                }
+              },
+              grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+              },
+              xAxis: [
+                {
+                  type: 'category',
+                  data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                  axisTick: {
+                    alignWithLabel: true
+                  }
+                }
+              ],
+              yAxis: [
+                {
+                  type: 'value'
+                }
+              ],
+              series: [
+                {
+                  name: '直接访问',
+                  type: 'bar',
+                  barWidth: '60%',
+                  data: [10, 52, 200, 334, 390, 330, 220]
+                }
+              ]
+            },
+            attrs: {
+              options: {
+                color: ['#3398DB'],
+                tooltip: {
+                  trigger: 'axis',
+                  axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+                  }
+                },
+                grid: {
+                  left: '3%',
+                  right: '4%',
+                  bottom: '3%',
+                  containLabel: true
+                },
+                xAxis: [
+                  {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    axisTick: {
+                      alignWithLabel: true
+                    }
+                  }
+                ],
+                yAxis: [
+                  {
+                    type: 'value'
+                  }
+                ],
+                series: [
+                  {
+                    name: '直接访问',
+                    type: 'bar',
+                    barWidth: '60%',
+                    data: [10, 52, 200, 334, 390, 330, 220]
+                  }
+                ]
+              },
+              autoResize: 'true'
+            }
+          }
+        })
+        console.log(this.page)
+      }
     },
 
     /**
@@ -659,7 +780,7 @@ export default {
      * 保存页面
      */
     savePage () {
-      console.log(this.page)
+      console.log('this.page>>>', this.page)
       api.base
         .updatePageComponents(this.page)
         .then(res => {
