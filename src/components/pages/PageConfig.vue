@@ -193,12 +193,16 @@
           内容:
           <div class="flex-space-between">
             <input v-model="currentBox.info.content" />
-            <i v-if="!currentBox.info.dataSource" class="icon-database" style="color:#bbb;" @click="toggleDataSource('text')"></i>
+            <i
+              v-if="!currentBox.info.dataSource"
+              class="icon-database"
+              style="color:#bbb;"
+              @click="toggleDataSource('text')"
+            ></i>
             <span style="width: 50px;" v-else>
               <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('text')"></i>
               <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
             </span>
-
           </div>
 
           <div>
@@ -238,53 +242,12 @@
         </div>
 
         <!-- ######### 配置数据源######### -->
-        <div class="config-datasource" v-if="showDataSource">
-          <div class="config-panel-title flex-space-between">
-            <span v-if="dataSource.configType==='text'">文字内容-数据源配置</span>
-            <i class="icon-cross" @click="toggleDataSource('text')"></i>
-          </div>
-          <div class="config-panel-content">
-            <div>选择数据源</div>
-            <div>
-              <button>接口</button>
-            </div>
-            <div>
-              接口来源
-              <el-select>
-                <el-option :label="'custom'">自定义接口</el-option>
-              </el-select>
-            </div>
-            <div>请求方式</div>
-            <div>
-              <el-select v-model="dataSource.method">
-                <el-option label="get" :value="'get'"></el-option>
-                <el-option label="post" :value="'post'"></el-option>
-              </el-select>
-            </div>
-            <div>请求地址</div>
-            <div>
-              <input v-model="dataSource.url" placeholder="请输入http://url"/>
-            </div>
-            <div>
-              参数
-            </div>
-            <div>
-              <textarea></textarea>
-            </div>
-            <div>
-              返回结果
-            </div>
-            <div>
-              <textarea></textarea>
-            </div>
-            <div>
-              <button>验证数据</button>
-            </div>
-            <div>
-              <button @click="subDataSource">确定</button>
-            </div>
-          </div>
-        </div>
+        <config-text-data-source
+          :showDataSource="showDataSource"
+          :boxDataSource="currentBox.info.dataSource"
+          @assignDataSource="subDataSource"
+          @toggleDataSource="toggleDataSource"
+        />
       </div>
     </div>
 
@@ -305,18 +268,19 @@
 <script>
 import * as api from '@/api'
 import env from '@/config/env'
+import { $http } from '@/service/requestService.js'
+import Vue from 'vue'
+
 import VTransform from '@/components/common/VTransform.vue'
 import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
-// eslint-disable-next-line no-unused-vars
-import { $http } from '@/service/requestService.js'
-
-import Vue from 'vue'
+import ConfigTextDataSource from './component/ConfigTextDataSource.vue'
 
 export default {
   name: 'PageConfig',
   components: {
     VTransform,
-    LayoutThumbnail
+    LayoutThumbnail,
+    ConfigTextDataSource
   },
   computed: {
     appId () {
@@ -1011,7 +975,10 @@ export default {
       this.showDataSource = !this.showDataSource
       if (this.showDataSource) {
         if (this.currentBox.info.hasOwnProperty('dataSource')) {
-          this.dataSource = Object.assign(this.dataSource, this.currentBox.info.dataSource)
+          this.dataSource = Object.assign(
+            this.dataSource,
+            this.currentBox.info.dataSource
+          )
         }
       }
     },
@@ -1019,12 +986,8 @@ export default {
     /**
      * 提交datasource
      */
-    async subDataSource () {
-      this.currentBox.info.dataSource = this.dataSource
-      const method = this.dataSource.method
-      const url = this.dataSource.url
-      const r = await $http[method](url)
-      this.currentBox.info.dataSource.data = r.data
+    async subDataSource (dataSource) {
+      this.currentBox.info.dataSource = dataSource
       console.log(this.page)
     },
     clearDataSource () {
@@ -1155,21 +1118,5 @@ export default {
 .left-nav-menu-item {
   padding: 10px;
   text-align: center;
-}
-.config-datasource {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: #ffffff;
-  width: 350px;
-}
-.config-panel-title {
-  padding: 15px;
-  font-weight: bold;
-  border-bottom: 1px solid #cccccc;
-}
-.config-panel-content {
-  padding: 15px;
 }
 </style>
