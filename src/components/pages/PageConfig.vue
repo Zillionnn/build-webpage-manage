@@ -72,10 +72,10 @@
       </div>
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
-    <div class="canvas-body">
+    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas">
       <div
         class="canvas-wrap"
-        :style="`margin-left: ${canvas.left-300}px;  margin-top: ${canvas.top-50}px;`"
+        :style="`margin-left: ${canvasMarginLeft}px;  margin-top: ${canvasMarginTop}px;`"
         @dragover="allowDrop"
         @drop="drop"
       >
@@ -356,10 +356,14 @@ export default {
       },
       canvas: {
         // 画布到上策距离
+        originTop: 60,
         top: 60,
         // 画布到左侧距离
+        originLeft: 400,
         left: 400
       },
+      canvasMarginLeft: 0,
+      canvasMarginTop: 0,
       currentBox: {
         info: {
           attrs: {
@@ -402,6 +406,8 @@ export default {
     }
   },
   created () {
+    this.canvasMarginLeft = this.canvas.left - 300
+    this.canvasMarginTop = this.canvas.top - 50
     this.getAppInfo(this.appId)
     this.getAppMenu()
     this.getPages()
@@ -477,12 +483,17 @@ export default {
         return info.content
       }
     },
-    async getDataSourceValue (dataSource, result) {
-      const method = dataSource.method
-      const url = dataSource.url
-      const r = await $http[method](url)
-      console.log(r)
-      result = r.data
+    /**
+     * 画布 滚动 调整
+     */
+    scrollCanvas (event) {
+      const scrollLeft = this.$refs.canvasBody.scrollLeft
+      const scrollTop = this.$refs.canvasBody.scrollTop
+
+      console.log(scrollLeft, scrollTop)
+      this.canvas.left = this.canvas.originLeft - scrollLeft
+      this.canvas.top = this.canvas.originTop - scrollTop
+      console.log(this.canvas)
     },
     /**
      * 应用信息
@@ -629,10 +640,6 @@ export default {
         })
       }
 
-      //  <chart :options="ToolStatisticsChart"
-      //              ref="chart"
-      //              :autoResize="true"
-      //              style="width: 3900px; height: 240px;" />
       if (this.dragItem === 'chart-bar') {
         components.push({
           id: id,
@@ -705,6 +712,7 @@ export default {
         })
         console.log(this.page)
       }
+
       if (this.dragItem === 'chart-line') {
         components.push({
           id: id,
