@@ -388,7 +388,6 @@ export default {
                   style: this.componentInfo.style
                 },
                 this.componentInfo.content
-                // _self.returnChild(this.componentInfo.content)
               )
             ]
           )
@@ -426,18 +425,20 @@ export default {
     })
   },
   methods: {
-    async returnChild (info) {
-      if (info.hasOwnProperty('content_value')) {
-        const method = info.content_value.method
-        const url = info.content_value.url
-        const r = await $http[method](url)
-        console.log(r)
-
-        return r.data
+    returnChild (info) {
+      if (info.hasOwnProperty('dataSource')) {
+        return info.dataSource.data
       } else {
         console.log(info)
-        return info.content + ',iu8t8'
+        return info.content
       }
+    },
+    async getDataSourceValue (dataSource, result) {
+      const method = dataSource.method
+      const url = dataSource.url
+      const r = await $http[method](url)
+      console.log(r)
+      result = r.data
     },
     /**
      * 应用信息
@@ -557,7 +558,7 @@ export default {
               fontSize: '12px'
             },
             content: '文字',
-            content_value: {
+            dataSource: {
               url: 'http://106.12.40.54:2999/api/v1/text/time',
               method: 'get',
               data: null
@@ -833,14 +834,38 @@ export default {
      * 选中页面 显示 该页面的组件
      *  查询页面detail
      */
-    selectedPage (page) {
+    async selectedPage (page) {
       this.activePage = page.page_id
-      api.base.pageDetail(page.page_id).then(res => {
-        this.page = res.data.data
-        this.page.components = this.page.components.map(e => {
-          return JSON.parse(e)
-        })
-      })
+      const res = await api.base.pageDetail(page.page_id)
+
+      this.page = res.data.data
+      const components = [...this.page.components]
+      this.page.components = []
+      for (let i = 0; i < components.length; i++) {
+        const e = components[i]
+        const jsonObj = JSON.parse(e)
+        if (jsonObj.info.dataSource !== undefined || jsonObj.info.dataSource) {
+          const method = jsonObj.info.dataSource.method
+          const url = jsonObj.info.dataSource.url
+
+          const r = await $http[method](url)
+          jsonObj.info.dataSource.data = r.data
+          console.log(jsonObj)
+
+          this.page.components.push(jsonObj)
+        } else {
+          this.page.components.push(JSON.parse(e))
+        }
+      }
+      // this.page.components = this.page.components.map(e => {
+      //   const jsonObj = JSON.parse(e)
+
+      // })
+      // for (let i = 0; i < this.page.components.length; i++) {
+      //   const e = this.page.components[i]
+      // }
+
+      console.log(this.page.components)
     },
 
     /**
