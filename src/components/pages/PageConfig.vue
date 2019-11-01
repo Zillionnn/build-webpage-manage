@@ -230,7 +230,7 @@
             <input v-model="currentBox.info.attrs.src" />
           </div>
         </div>
-        <div v-if="componentType==='chart-bar'">
+        <div v-if="componentType.indexOf('chart')>-1">
           <!-- {{currentBox}} -->
           width:
           <input v-model="currentBox.info.style.width" />
@@ -250,7 +250,6 @@
               <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
             </span>
           </div>
-
           <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
           <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
@@ -725,6 +724,9 @@ export default {
             },
             props: {
               options: {
+                legend: {
+                  show: true
+                },
                 tooltip: {
                   trigger: 'axis',
                   axisPointer: {
@@ -734,10 +736,16 @@ export default {
                 },
                 xAxis: {
                   type: 'category',
+                  axisLabel: {
+                    show: true
+                  },
                   data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
                 },
                 yAxis: {
-                  type: 'value'
+                  type: 'value',
+                  axisLabel: {
+                    show: true
+                  }
                 },
                 series: [
                   {
