@@ -72,7 +72,12 @@
       </div>
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
-    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas">
+    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas" >
+      <!-- <div class="slider-scale">
+        <el-slider v-model="canvasScale" :step="10" @change="scaleCanvas"></el-slider>
+      </div> -->
+      <!-- :style="`transform:scale(${canvasBodyScale*0.01})`" -->
+
       <div
         class="canvas-wrap"
         :style="`margin-left: ${canvasMarginLeft}px;  margin-top: ${canvasMarginTop}px;`"
@@ -309,6 +314,7 @@ export default {
 
   data () {
     return {
+      canvasScale: 0.5,
       appInfo: null,
       active: 0,
       showNavigator: false,
@@ -317,38 +323,7 @@ export default {
       page: {
         appId: '',
         name: '',
-        components: [
-          {
-            id: 'f1',
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 200,
-            rotate: 40,
-            info: {
-              tagName: 'span',
-              attrs: {
-                id: 'f1'
-              },
-              content: '文字'
-            }
-          },
-          {
-            id: 'f2',
-            x: 0,
-            y: 0,
-            width: 50,
-            height: 50,
-            rotate: 0,
-            info: {
-              tagName: 'span',
-              attrs: {
-                id: 'f1'
-              },
-              content: '文字'
-            }
-          }
-        ]
+        components: []
       },
       mousePosition: {
         x: 0,
@@ -403,6 +378,10 @@ export default {
         console.log(val)
         this.saveApp()
       }
+    },
+
+    canvasScale (val) {
+      this.canvasBodyScale = val
     }
   },
   created () {
@@ -483,6 +462,7 @@ export default {
         return info.content
       }
     },
+
     /**
      * 画布 滚动 调整
      */
@@ -1022,13 +1002,17 @@ export default {
     async subDataSource (dataSource) {
       this.currentBox.info.dataSource = dataSource
       if (this.currentBox.type.indexOf('chart') > -1) {
-        this.currentBox.info.props.options.xAxis.data = dataSource.data.map(e => {
-          return e[0]
-        })
+        this.currentBox.info.props.options.xAxis.data = dataSource.data.map(
+          e => {
+            return e[0]
+          }
+        )
 
-        this.currentBox.info.props.options.series[0].data = dataSource.data.map(e => {
-          return e[1]
-        })
+        this.currentBox.info.props.options.series[0].data = dataSource.data.map(
+          e => {
+            return e[1]
+          }
+        )
         // TODO 超过1个系列
         // const item = dataSource[0]
         // if (item.length > 2) {
@@ -1107,6 +1091,12 @@ export default {
   background: #ffffff;
   border-right: 1px solid #bbb;
   padding: 10px;
+}
+.slider-scale{
+  position: absolute;
+  bottom: 0;
+  left:100px;
+  width: 800px;
 }
 .canvas-body {
   position: absolute;
