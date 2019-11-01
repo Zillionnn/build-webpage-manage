@@ -236,6 +236,21 @@
           <input v-model="currentBox.info.style.width" />
           height:
           <input v-model="currentBox.info.style.height" />
+          <!-- 配置数据源 -->
+          <div>
+            <span>配置数据源</span>
+            <i
+              v-if="!currentBox.info.dataSource"
+              class="icon-database"
+              style="color:#bbb;"
+              @click="toggleDataSource('chart')"
+            ></i>
+            <span style="width: 50px;" v-else>
+              <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('chart')"></i>
+              <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
+            </span>
+          </div>
+
           <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
           <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
@@ -243,6 +258,7 @@
 
         <!-- ######### 配置数据源######### -->
         <config-text-data-source
+          :dataSourceConfigType="dataSourceConfigType"
           :showDataSource="showDataSource"
           :boxDataSource="currentBox.info.dataSource"
           @assignDataSource="subDataSource"
@@ -369,6 +385,7 @@ export default {
       fontSizeList: env.fontSizeList,
       // 数据源
       showDataSource: false,
+      dataSourceConfigType: '',
       dataSource: {
         configType: 'text',
         method: 'get',
@@ -970,8 +987,8 @@ export default {
       console.log(event)
     },
 
-    toggleDataSource () {
-      console.warn('do')
+    toggleDataSource (t) {
+      this.dataSourceConfigType = t
       this.showDataSource = !this.showDataSource
       if (this.showDataSource) {
         if (this.currentBox.info.hasOwnProperty('dataSource')) {
@@ -988,6 +1005,29 @@ export default {
      */
     async subDataSource (dataSource) {
       this.currentBox.info.dataSource = dataSource
+      if (this.currentBox.type.indexOf('chart') > -1) {
+        this.currentBox.info.props.options.xAxis.data = dataSource.data.map(e => {
+          return e[0]
+        })
+
+        this.currentBox.info.props.options.series[0].data = dataSource.data.map(e => {
+          return e[1]
+        })
+        // TODO 超过1个系列
+        // const item = dataSource[0]
+        // if (item.length > 2) {
+        //   let serie = {
+        //     name: '?',
+        //     type: 'bar',
+        //     barWidth: '60%',
+        //     data: []
+        //   }
+        //   this.currentBox.info.props.options.series[0].data =
+        //   serie.data = dataSource.map(e => {
+        //     return e[2]
+        //   })
+        // }
+      }
       console.log(this.page)
     },
     clearDataSource () {

@@ -1,7 +1,7 @@
 <template>
   <div class="config-datasource" v-if="showDataSource">
     <div class="config-panel-title flex-space-between">
-      <span>文字内容-数据源配置</span>
+      <span>{{configType[dataSourceConfigType]}}</span>
       <i class="icon-cross" @click="toggleDataSource('text')"></i>
     </div>
     <div class="config-panel-content">
@@ -32,7 +32,7 @@
       </div>
       <div>返回结果</div>
       <div>
-        <textarea></textarea>
+       {{response}}
       </div>
       <div>
         <button>验证数据</button>
@@ -51,6 +51,11 @@ export default {
   name: 'ConfigTextDataSource',
   components: {},
   props: {
+    dataSourceConfigType: {
+      type: String,
+      required: false,
+      default: 'text'
+    },
     showDataSource: {
       type: Boolean,
       required: true,
@@ -69,7 +74,12 @@ export default {
         method: 'get',
         url: '',
         data: null
-      }
+      },
+      configType: {
+        text: '文字内容-数据源配置',
+        chart: '展示数据-数据源配置'
+      },
+      response: ''
     }
   },
   watch: {
@@ -92,6 +102,7 @@ export default {
       const url = this.dataSource.url
       const r = await $http[method](url)
       this.dataSource.data = r.data
+      this.response = r.data
       this.$emit('assignDataSource', this.dataSource)
     }
   }
@@ -107,6 +118,7 @@ export default {
   bottom: 0;
   background: #ffffff;
   width: 350px;
+  z-index: 10;
 }
 .config-panel-title {
   padding: 15px;
