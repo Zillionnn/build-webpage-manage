@@ -193,7 +193,12 @@
           内容:
           <div class="flex-space-between">
             <input v-model="currentBox.info.content" />
-            <i class="icon-database" style="color:#00ceff;" @click="toggleDataSource('text')"></i>
+            <i v-if="!currentBox.info.dataSource" class="icon-database" style="color:#bbb;" @click="toggleDataSource('text')"></i>
+            <span style="width: 50px;" v-else>
+              <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('text')"></i>
+              <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
+            </span>
+
           </div>
 
           <div>
@@ -233,7 +238,7 @@
         </div>
 
         <!-- ######### 配置数据源######### -->
-        <div class="config-datasource" v-if="dataSource.showDataSource">
+        <div class="config-datasource" v-if="showDataSource">
           <div class="config-panel-title flex-space-between">
             <span v-if="dataSource.configType==='text'">文字内容-数据源配置</span>
             <i class="icon-cross" @click="toggleDataSource('text')"></i>
@@ -277,7 +282,6 @@
             </div>
             <div>
               <button @click="subDataSource">确定</button>
-              <button @click="clearDataSource">清除数据源</button>
             </div>
           </div>
         </div>
@@ -399,8 +403,9 @@ export default {
       pageList: [],
       activePage: '',
       fontSizeList: env.fontSizeList,
+      // 数据源
+      showDataSource: false,
       dataSource: {
-        showDataSource: false,
         configType: 'text',
         method: 'get',
         url: '',
@@ -905,7 +910,6 @@ export default {
         if (jsonObj.info.dataSource !== undefined && jsonObj.info.dataSource) {
           const method = jsonObj.info.dataSource.method
           const url = jsonObj.info.dataSource.url
-
           const r = await $http[method](url)
           jsonObj.info.dataSource.data = r.data
           console.log(jsonObj)
@@ -1003,8 +1007,9 @@ export default {
     },
 
     toggleDataSource () {
-      this.dataSource.showDataSource = !this.dataSource.showDataSource
-      if (this.dataSource.showDataSource) {
+      console.warn('do')
+      this.showDataSource = !this.showDataSource
+      if (this.showDataSource) {
         if (this.currentBox.info.hasOwnProperty('dataSource')) {
           this.dataSource = Object.assign(this.dataSource, this.currentBox.info.dataSource)
         }
@@ -1014,8 +1019,12 @@ export default {
     /**
      * 提交datasource
      */
-    subDataSource () {
+    async subDataSource () {
       this.currentBox.info.dataSource = this.dataSource
+      const method = this.dataSource.method
+      const url = this.dataSource.url
+      const r = await $http[method](url)
+      this.currentBox.info.dataSource.data = r.data
       console.log(this.page)
     },
     clearDataSource () {
