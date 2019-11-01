@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-polyfill": "^6.26.0",
     "echarts": "^4.4.0",
     "vue": "^2.6.10",
     "vue-echarts": "^4.0.4",
@@ -22,6 +21,7 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "@babel/polyfill": "^7.6.0",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^8.2.1",
