@@ -29,4 +29,9 @@ body,html{
   height: 100vh;
   position: relative;
 }
+.flex-space-between{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+}
 </style>

@@ -70,7 +70,6 @@
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-bar')">柱状图</div>
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-line')">折线图</div>
       </div>
-
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
     <div class="canvas-body">
@@ -191,8 +190,12 @@
         <input v-model="currentBox.rotate" />
         <div v-if="componentType==='text'">
           <!-- {{currentBox}} -->
-          content:
-          <input v-model="currentBox.info.content" />
+          内容:
+          <div class="flex-space-between">
+            <input v-model="currentBox.info.content" />
+            <i class="icon-database" style="color:#00ceff;" @click="toggleDataSource('text')"></i>
+          </div>
+
           <div>
             <span>颜色:</span>
             <el-color-picker v-model="currentBox.info.style.color"></el-color-picker>
@@ -222,13 +225,62 @@
           <!-- {{currentBox}} -->
           width:
           <input v-model="currentBox.info.style.width" />
-           height:
+          height:
           <input v-model="currentBox.info.style.height" />
-           <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
-           <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
-           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
+          <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
+          <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
+          <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
         </div>
 
+        <!-- ######### 配置数据源######### -->
+        <div class="config-datasource" v-if="dataSource.showDataSource">
+          <div class="config-panel-title flex-space-between">
+            <span v-if="dataSource.configType==='text'">文字内容-数据源配置</span>
+            <i class="icon-cross" @click="toggleDataSource('text')"></i>
+          </div>
+          <div class="config-panel-content">
+            <div>选择数据源</div>
+            <div>
+              <button>接口</button>
+            </div>
+            <div>
+              接口来源
+              <el-select>
+                <el-option :label="'custom'">自定义接口</el-option>
+              </el-select>
+            </div>
+            <div>请求方式</div>
+            <div>
+              <el-select v-model="dataSource.method">
+                <el-option label="get" :value="'get'"></el-option>
+                <el-option label="post" :value="'post'"></el-option>
+              </el-select>
+            </div>
+            <div>请求地址</div>
+            <div>
+              <input v-model="dataSource.url" placeholder="请输入http://url"/>
+            </div>
+            <div>
+              参数
+            </div>
+            <div>
+              <textarea></textarea>
+            </div>
+            <div>
+              返回结果
+            </div>
+            <div>
+              <textarea></textarea>
+            </div>
+            <div>
+              <button>验证数据</button>
+            </div>
+            <div>
+              <button @click="subDataSource">确定</button>
+              <button @click="clearDataSource">清除数据源</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -252,7 +304,7 @@ import env from '@/config/env'
 import VTransform from '@/components/common/VTransform.vue'
 import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
 // eslint-disable-next-line no-unused-vars
-import {$http} from '@/service/requestService.js'
+import { $http } from '@/service/requestService.js'
 
 import Vue from 'vue'
 
@@ -346,7 +398,14 @@ export default {
       showMenuDetailSetting: false,
       pageList: [],
       activePage: '',
-      fontSizeList: env.fontSizeList
+      fontSizeList: env.fontSizeList,
+      dataSource: {
+        showDataSource: false,
+        configType: 'text',
+        method: 'get',
+        url: '',
+        data: null
+      }
     }
   },
   watch: {
@@ -382,7 +441,7 @@ export default {
                 {
                   attrs: this.componentInfo.attrs,
                   props: {
-                  // 为了echart 的属性
+                    // 为了echart 的属性
                     options: this.componentInfo.props.options
                   },
                   style: this.componentInfo.style
@@ -426,7 +485,7 @@ export default {
   },
   methods: {
     returnChild (info) {
-      if (info.hasOwnProperty('dataSource')) {
+      if (info.hasOwnProperty('dataSource') && info.dataSource) {
         return info.dataSource.data
       } else {
         console.log(info)
@@ -542,7 +601,7 @@ export default {
         components.push({
           id: id,
           x: 300,
-          y: 300,
+          y: 100,
           width: 100,
           height: 100,
           rotate: 0,
@@ -558,11 +617,7 @@ export default {
               fontSize: '12px'
             },
             content: '文字',
-            dataSource: {
-              url: 'http://106.12.40.54:2999/api/v1/text/time',
-              method: 'get',
-              data: null
-            }
+            dataSource: null
           }
         })
       }
@@ -618,7 +673,8 @@ export default {
                 },
                 tooltip: {
                   trigger: 'axis',
-                  axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                  axisPointer: {
+                    // 坐标轴指示器，坐标轴触发有效
                     type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
                   }
                 },
@@ -659,7 +715,6 @@ export default {
             },
             attrs: {
               id: id
-
             }
           }
         })
@@ -686,7 +741,8 @@ export default {
               options: {
                 tooltip: {
                   trigger: 'axis',
-                  axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                  axisPointer: {
+                    // 坐标轴指示器，坐标轴触发有效
                     type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
                   }
                 },
@@ -697,11 +753,13 @@ export default {
                 yAxis: {
                   type: 'value'
                 },
-                series: [{
-                  data: [820, 932, 901, 934, 1290, 1330, 1320],
-                  type: 'line',
-                  smooth: true
-                }]
+                series: [
+                  {
+                    data: [820, 932, 901, 934, 1290, 1330, 1320],
+                    type: 'line',
+                    smooth: true
+                  }
+                ]
               },
               autoResize: 'true'
             },
@@ -844,7 +902,7 @@ export default {
       for (let i = 0; i < components.length; i++) {
         const e = components[i]
         const jsonObj = JSON.parse(e)
-        if (jsonObj.info.dataSource !== undefined || jsonObj.info.dataSource) {
+        if (jsonObj.info.dataSource !== undefined && jsonObj.info.dataSource) {
           const method = jsonObj.info.dataSource.method
           const url = jsonObj.info.dataSource.url
 
@@ -942,6 +1000,27 @@ export default {
      */
     rightBtnMenu (event) {
       console.log(event)
+    },
+
+    toggleDataSource () {
+      this.dataSource.showDataSource = !this.dataSource.showDataSource
+      if (this.dataSource.showDataSource) {
+        if (this.currentBox.info.hasOwnProperty('dataSource')) {
+          this.dataSource = Object.assign(this.dataSource, this.currentBox.info.dataSource)
+        }
+      }
+    },
+
+    /**
+     * 提交datasource
+     */
+    subDataSource () {
+      this.currentBox.info.dataSource = this.dataSource
+      console.log(this.page)
+    },
+    clearDataSource () {
+      this.currentBox.info.dataSource = null
+      console.log(this.page)
     }
     // ###########################methods#########################
   }
@@ -1045,6 +1124,7 @@ export default {
   width: 240px;
   border: 1px solid;
   padding: 10px;
+  position: relative;
 }
 .top-nav {
   background: #000000;
@@ -1066,5 +1146,21 @@ export default {
 .left-nav-menu-item {
   padding: 10px;
   text-align: center;
+}
+.config-datasource {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #ffffff;
+  width: 350px;
+}
+.config-panel-title {
+  padding: 15px;
+  font-weight: bold;
+  border-bottom: 1px solid #cccccc;
+}
+.config-panel-content {
+  padding: 15px;
 }
 </style>
