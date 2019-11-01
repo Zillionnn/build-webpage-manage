@@ -228,12 +228,7 @@
         </div>
         <div v-if="componentType==='image'">
           <!-- {{currentBox}} -->
-          content:
-          <input v-model="currentBox.info.content" />
-          <div>
-            <span>图片源:</span>
-            <input v-model="currentBox.info.attrs.src" />
-          </div>
+            <image-config v-model="currentBox.info.attrs.src"/>
         </div>
         <div v-if="componentType.indexOf('chart')>-1">
           <!-- {{currentBox}} -->
@@ -258,6 +253,10 @@
           <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
           <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
+          <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
+            <div>系列{{index+1}}名称</div>
+            <input v-model="serie.name"/>
+          </div>
         </div>
 
         <!-- ######### 配置数据源######### -->
@@ -294,13 +293,15 @@ import Vue from 'vue'
 import VTransform from '@/components/common/VTransform.vue'
 import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
 import ConfigTextDataSource from './component/ConfigTextDataSource.vue'
+import ImageConfig from './component/ImageConfig.vue'
 
 export default {
   name: 'PageConfig',
   components: {
     VTransform,
     LayoutThumbnail,
-    ConfigTextDataSource
+    ConfigTextDataSource,
+    ImageConfig
   },
   computed: {
     appId () {
@@ -1000,19 +1001,40 @@ export default {
      * 提交datasource
      */
     async subDataSource (dataSource) {
+      console.log(dataSource)
       this.currentBox.info.dataSource = dataSource
       if (this.currentBox.type.indexOf('chart') > -1) {
+        let type = ''
+        if (this.currentBox.type.indexOf('bar') > -1) {
+          type = 'bar'
+        } else {
+          type = 'line'
+        }
         this.currentBox.info.props.options.xAxis.data = dataSource.data.map(
           e => {
             return e[0]
           }
         )
-
-        this.currentBox.info.props.options.series[0].data = dataSource.data.map(
-          e => {
-            return e[1]
+        this.currentBox.info.props.options.series = []
+        const item = dataSource.data[0]
+        console.log(item)
+        for (let i = 1; i < item.length; i++) {
+          const data = dataSource.data.map(
+            e => {
+              return e[i]
+            }
+          )
+          let serie = {
+            name: `系列${i}`,
+            type: type,
+            barWidth: '30%',
+            smooth: true,
+            data: data
           }
-        )
+          this.currentBox.info.props.options.series.push(serie)
+        }
+        console.log(this.currentBox.info.props.options)
+
         // TODO 超过1个系列
         // const item = dataSource[0]
         // if (item.length > 2) {
