@@ -274,7 +274,7 @@
           </div>
           <div v-else>
             <div>
-                <input v-model="currentBox.info.props.options.title.text" />
+               标题 <input v-model="currentBox.info.props.options.title.text" />
             </div>
              <div v-for="(serie,index) in currentBox.info.props.options.series[0].data" :key="index">
               <div>系列{{index+1}}名称</div>
@@ -1227,12 +1227,12 @@ export default {
         component.info.props.options.series = []
         const item = dataSource.data[0]
         console.log(item)
-        for (let i = 0; i < item.length - 1; i++) {
+        for (let i = 1; i < item.length; i++) {
           const data = dataSource.data.map(e => {
             return e[i]
           })
           let serie = {
-            name: seriesNameList[i],
+            name: seriesNameList[i - 1],
             type: type,
             barWidth: '30%',
             barGap: '0%',
