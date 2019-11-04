@@ -1020,16 +1020,15 @@ export default {
     async selectedPage (page) {
       this.activePage = page.page_id
       const res = await api.base.pageDetail(page.page_id)
-
+      console.log(res)
       this.page = res.data.data
-      console.log(this.page)
+
       const components = [...this.page.components]
       this.page.components = []
       for (let i = 0; i < components.length; i++) {
         const e = components[i]
-        console.log(e)
         let componentInfo = JSON.parse(e)
-        console.log('selectedPage jsonObj>>>>', componentInfo)
+        console.log('selectedPage jsonObj>>>>', e, componentInfo)
 
         if (componentInfo.info.dataSource !== undefined && componentInfo.info.dataSource) {
           const method = componentInfo.info.dataSource.method
@@ -1197,7 +1196,7 @@ export default {
     },
 
     async generateData (component, dataSource) {
-      console.log(dataSource)
+      console.log('generateData>>>>>>', component, dataSource)
       if (component.type.indexOf('pie') > -1) {
         component.info.props.options.series = []
 
@@ -1222,15 +1221,18 @@ export default {
             return e[0]
           }
         )
+        const seriesNameList = component.info.props.options.series.map(e => {
+          return e.name
+        })
         component.info.props.options.series = []
         const item = dataSource.data[0]
         console.log(item)
-        for (let i = 1; i < item.length; i++) {
+        for (let i = 0; i < item.length - 1; i++) {
           const data = dataSource.data.map(e => {
             return e[i]
           })
           let serie = {
-            name: `系列${i}`,
+            name: seriesNameList[i],
             type: type,
             barWidth: '30%',
             barGap: '0%',
