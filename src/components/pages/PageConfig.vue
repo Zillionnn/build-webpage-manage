@@ -260,6 +260,7 @@
             <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
           </div>
           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
+
           <div v-if="!isPie">
             <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
               <div>系列{{index+1}}名称</div>
@@ -271,6 +272,21 @@
               </div>
             </div>
           </div>
+          <div v-else>
+            <div>
+                <input v-model="currentBox.info.props.options.title.text" />
+            </div>
+             <div v-for="(serie,index) in currentBox.info.props.options.series[0].data" :key="index">
+              <div>系列{{index+1}}名称</div>
+              <div class="flex-space-between">
+                <span>{{serie.name}}</span>
+                <div>
+                  <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- ######### 配置数据源######### -->
@@ -826,8 +842,8 @@ export default {
                   '#c4ccd3'
                 ],
                 title: {
-                  text: '某站点用户访问来源',
-                  subtext: '纯属虚构',
+                  text: '',
+                  subtext: '',
                   x: 'center'
                 },
                 tooltip: {
@@ -1006,19 +1022,23 @@ export default {
       const res = await api.base.pageDetail(page.page_id)
 
       this.page = res.data.data
+      console.log(this.page)
       const components = [...this.page.components]
       this.page.components = []
       for (let i = 0; i < components.length; i++) {
         const e = components[i]
-        const jsonObj = JSON.parse(e)
-        if (jsonObj.info.dataSource !== undefined && jsonObj.info.dataSource) {
-          const method = jsonObj.info.dataSource.method
-          const url = jsonObj.info.dataSource.url
-          const r = await $http[method](url)
-          jsonObj.info.dataSource.data = r.data
-          console.log(jsonObj)
+        console.log(e)
+        let componentInfo = JSON.parse(e)
+        console.log('selectedPage jsonObj>>>>', componentInfo)
 
-          this.page.components.push(jsonObj)
+        if (componentInfo.info.dataSource !== undefined && componentInfo.info.dataSource) {
+          const method = componentInfo.info.dataSource.method
+          const url = componentInfo.info.dataSource.url
+          const r = await $http[method](url)
+          componentInfo.info.dataSource.data = r.data
+          this.generateData(componentInfo, r)
+
+          this.page.components.push(componentInfo)
         } else {
           this.page.components.push(JSON.parse(e))
         }
@@ -1127,7 +1147,7 @@ export default {
      * 提交datasource
      */
     async subDataSource (dataSource) {
-      console.log(dataSource)
+      console.log('dataSource>>>', dataSource)
       this.currentBox.info.dataSource = dataSource
       if (this.currentBox.type.indexOf('pie') > -1) {
         this.currentBox.info.props.options.series = []
@@ -1140,7 +1160,7 @@ export default {
           data: dataSource.data.data
         }
         this.currentBox.info.props.options.series.push(serie)
-        console.log(this.currentBox.info.props.options)
+        console.log('SUB DATA SOURCE PIE', this.currentBox.info.props.options)
       } else if (this.currentBox.type.indexOf('chart') > -1) {
         let type = ''
         if (this.currentBox.type.indexOf('bar') > -1) {
@@ -1175,6 +1195,56 @@ export default {
 
       console.log(this.page)
     },
+
+    async generateData (component, dataSource) {
+      console.log(dataSource)
+      if (component.type.indexOf('pie') > -1) {
+        component.info.props.options.series = []
+
+        let serie = {
+          name: '',
+          type: 'pie',
+          radius: '55%',
+          center: ['50%', '60%'],
+          data: dataSource.data.data
+        }
+        component.info.props.options.series.push(serie)
+        console.log('SUB DATA SOURCE PIE', component.info.props.options)
+      } else if (component.type.indexOf('chart') > -1) {
+        let type = ''
+        if (component.type.indexOf('bar') > -1) {
+          type = 'bar'
+        } else {
+          type = 'line'
+        }
+        component.info.props.options.xAxis.data = dataSource.data.map(
+          e => {
+            return e[0]
+          }
+        )
+        component.info.props.options.series = []
+        const item = dataSource.data[0]
+        console.log(item)
+        for (let i = 1; i < item.length; i++) {
+          const data = dataSource.data.map(e => {
+            return e[i]
+          })
+          let serie = {
+            name: `系列${i}`,
+            type: type,
+            barWidth: '30%',
+            barGap: '0%',
+            smooth: true,
+            data: data
+          }
+          component.info.props.options.series.push(serie)
+        }
+        console.log(component.info.props.options)
+      }
+
+      console.log(this.page)
+    },
+
     clearDataSource () {
       this.currentBox.info.dataSource = null
       console.log(this.page)
