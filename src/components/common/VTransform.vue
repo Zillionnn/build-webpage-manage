@@ -256,6 +256,7 @@ export default {
           DOWN: false
         }
       }
+      this.$emit('doneReset')
     },
     setSizeCross (r, c) {
       this.setSize(1, r)

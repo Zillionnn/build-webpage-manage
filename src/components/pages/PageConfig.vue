@@ -105,6 +105,7 @@
             :rotate="box.rotate"
             @update="update(box,arguments)"
             @select="setSelect(index)"
+            @doneReset="doneReset(box)"
           >
             <div :id="box.id" style="width:100%;height:100%;">
               <v-render
@@ -256,6 +257,9 @@
           <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
             <div>系列{{index+1}}名称</div>
             <input v-model="serie.name"/>
+            <div>
+               <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+            </div>
           </div>
         </div>
 
@@ -538,6 +542,7 @@ export default {
       this.componentType = this.currentBox.type
       console.log('index', index)
     },
+
     update (box, args) {
       console.log(box)
       const conf = args[0]
@@ -553,9 +558,16 @@ export default {
       if (box.type.indexOf('chart') > -1) {
         box.info.style.width = box.width + 'px'
         box.info.style.height = box.height + 'px'
+        console.warn(this.page.components)
         console.log('currentBox>>', this.currentBox)
       }
     },
+
+    doneReset (box) {
+      console.log()
+      this.page.components.splice(this.selectedIdx, 1, this.currentBox)
+    },
+
     allowDrop (e) {
       e.preventDefault()
     },
@@ -680,6 +692,7 @@ export default {
                     name: '直接访问',
                     type: 'bar',
                     barWidth: '60%',
+                    barGap: '0%',
                     data: [10, 52, 200, 334, 390, 330, 220]
                   }
                 ]
@@ -713,6 +726,7 @@ export default {
             },
             props: {
               options: {
+                color: ['#3398DB'],
                 legend: {
                   show: true
                 },
@@ -1028,6 +1042,7 @@ export default {
             name: `系列${i}`,
             type: type,
             barWidth: '30%',
+            barGap: '0%',
             smooth: true,
             data: data
           }
