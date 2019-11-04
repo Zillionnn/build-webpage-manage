@@ -31,6 +31,10 @@ export default {
   methods: {
     savePage () {
       this.$store.dispatch('passSave', true)
+      this.$message({
+        type: 'success',
+        message: '保存成功'
+      })
     }
   }
 
