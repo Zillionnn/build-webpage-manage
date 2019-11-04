@@ -69,6 +69,7 @@
         <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-bar')">柱状图</div>
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-line')">折线图</div>
+        <div class="component-drag" draggable="true" @dragstart="startDrag('chart-pie')">饼图</div>
       </div>
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
@@ -77,7 +78,6 @@
         <el-slider v-model="canvasScale" :step="10" @change="scaleCanvas"></el-slider>
       </div>-->
       <!-- :style="`transform:scale(${canvasBodyScale*0.01})`" -->
-
       <div
         class="canvas-wrap"
         :style="`margin-left: ${canvasMarginLeft}px;  margin-top: ${canvasMarginTop}px;`"
@@ -107,7 +107,7 @@
             @select="setSelect(index)"
             @doneReset="doneReset(box)"
           >
-            <div v-if="box.show" :id="box.id" style="width:100%;height:100%;" >
+            <div v-if="box.show" :id="box.id" style="width:100%;height:100%;">
               <v-render
                 :componentInfo="box.info"
                 :tag="'span'"
@@ -227,10 +227,14 @@
             </el-select>
           </div>
         </div>
+
+        <!-- IMAGE CONFIG -->
         <div v-if="componentType==='image'">
           <!-- {{currentBox}} -->
           <image-config v-model="currentBox.info.attrs.src" />
         </div>
+
+        <!-- CHART CONFIG -->
         <div v-if="componentType.indexOf('chart')>-1">
           <!-- {{currentBox}} -->
           width:
@@ -251,15 +255,19 @@
               <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
             </span>
           </div>
-          <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
-          <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
+          <div v-if="!isPie">
+            <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
+            <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
+          </div>
           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
-          <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
-            <div>系列{{index+1}}名称</div>
-            <div class="flex-space-between">
-              <input v-model="serie.name" />
-              <div>
-                <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+          <div v-if="!isPie">
+            <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
+              <div>系列{{index+1}}名称</div>
+              <div class="flex-space-between">
+                <input v-model="serie.name" />
+                <div>
+                  <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+                </div>
               </div>
             </div>
           </div>
@@ -316,6 +324,10 @@ export default {
     },
     doSave () {
       return this.$store.getters.doSave
+    },
+
+    isPie () {
+      return this.componentType.indexOf('pie') > -1
     }
   },
 
@@ -589,8 +601,9 @@ export default {
       const id = 't' + parseInt(Math.random() * 100)
       console.log(this.page)
       let components = this.page.components
+      let newComponent = null
       if (this.dragItem === 'text') {
-        components.push({
+        newComponent = {
           show: true,
           id: id,
           x: 300,
@@ -612,10 +625,11 @@ export default {
             content: '文字',
             dataSource: null
           }
-        })
+        }
+        components.push(newComponent)
       }
       if (this.dragItem === 'pic') {
-        components.push({
+        newComponent = {
           show: true,
           id: 'f1',
           x: 300,
@@ -635,11 +649,12 @@ export default {
               src: ''
             }
           }
-        })
+        }
+        components.push(newComponent)
       }
 
       if (this.dragItem === 'chart-bar') {
-        components.push({
+        newComponent = {
           show: true,
           id: id,
           x: 300,
@@ -709,12 +724,13 @@ export default {
               id: id
             }
           }
-        })
+        }
+        components.push(newComponent)
         console.log(this.page)
       }
 
       if (this.dragItem === 'chart-line') {
-        components.push({
+        newComponent = {
           show: true,
           id: id,
           x: 300,
@@ -771,9 +787,98 @@ export default {
               id: id
             }
           }
-        })
+        }
+        components.push(newComponent)
         console.log(this.page)
       }
+
+      if (this.dragItem === 'chart-pie') {
+        newComponent = {
+          show: true,
+          id: id,
+          x: 300,
+          y: 300,
+          width: 350,
+          height: 300,
+          rotate: 0,
+          type: 'chart-pie',
+
+          info: {
+            tagName: 'v-echart',
+            style: {
+              position: 'absolute',
+              width: '350px',
+              height: '300px'
+            },
+            props: {
+              options: {
+                color: [
+                  '#c23531',
+                  '#2f4554',
+                  '#61a0a8',
+                  '#d48265',
+                  '#91c7ae',
+                  '#749f83',
+                  '#ca8622',
+                  '#bda29a',
+                  '#6e7074',
+                  '#546570',
+                  '#c4ccd3'
+                ],
+                title: {
+                  text: '某站点用户访问来源',
+                  subtext: '纯属虚构',
+                  x: 'center'
+                },
+                tooltip: {
+                  trigger: 'item',
+                  formatter: '{a} <br/>{b} : {c} ({d}%)'
+                },
+                legend: {
+                  orient: 'vertical',
+                  left: 'left',
+                  data: [
+                    '直接访问',
+                    '邮件营销',
+                    '联盟广告',
+                    '视频广告',
+                    '搜索引擎'
+                  ]
+                },
+                series: [
+                  {
+                    name: '访问来源',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: [
+                      { value: 335, name: '直接访问' },
+                      { value: 310, name: '邮件营销' },
+                      { value: 234, name: '联盟广告' },
+                      { value: 135, name: '视频广告' },
+                      { value: 1548, name: '搜索引擎' }
+                    ],
+                    itemStyle: {
+                      emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                      }
+                    }
+                  }
+                ]
+              },
+              autoResize: 'true'
+            },
+            attrs: {
+              id: id
+            }
+          }
+        }
+        components.push(newComponent)
+        console.log(this.page)
+      }
+      this.setSelect(components.length - 1)
     },
 
     /**
@@ -1024,7 +1129,19 @@ export default {
     async subDataSource (dataSource) {
       console.log(dataSource)
       this.currentBox.info.dataSource = dataSource
-      if (this.currentBox.type.indexOf('chart') > -1) {
+      if (this.currentBox.type.indexOf('pie') > -1) {
+        this.currentBox.info.props.options.series = []
+
+        let serie = {
+          name: '',
+          type: 'pie',
+          radius: '55%',
+          center: ['50%', '60%'],
+          data: dataSource.data.data
+        }
+        this.currentBox.info.props.options.series.push(serie)
+        console.log(this.currentBox.info.props.options)
+      } else if (this.currentBox.type.indexOf('chart') > -1) {
         let type = ''
         if (this.currentBox.type.indexOf('bar') > -1) {
           type = 'bar'
@@ -1054,22 +1171,8 @@ export default {
           this.currentBox.info.props.options.series.push(serie)
         }
         console.log(this.currentBox.info.props.options)
-
-        // TODO 超过1个系列
-        // const item = dataSource[0]
-        // if (item.length > 2) {
-        //   let serie = {
-        //     name: '?',
-        //     type: 'bar',
-        //     barWidth: '60%',
-        //     data: []
-        //   }
-        //   this.currentBox.info.props.options.series[0].data =
-        //   serie.data = dataSource.map(e => {
-        //     return e[2]
-        //   })
-        // }
       }
+
       console.log(this.page)
     },
     clearDataSource () {
