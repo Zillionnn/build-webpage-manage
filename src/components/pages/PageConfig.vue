@@ -72,10 +72,10 @@
       </div>
     </div>
     <!-- ###################################画布 操作界面 ########################################-->
-    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas" >
+    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas">
       <!-- <div class="slider-scale">
         <el-slider v-model="canvasScale" :step="10" @change="scaleCanvas"></el-slider>
-      </div> -->
+      </div>-->
       <!-- :style="`transform:scale(${canvasBodyScale*0.01})`" -->
 
       <div
@@ -107,7 +107,7 @@
             @select="setSelect(index)"
             @doneReset="doneReset(box)"
           >
-            <div :id="box.id" style="width:100%;height:100%;">
+            <div v-if="box.show" :id="box.id" style="width:100%;height:100%;" >
               <v-render
                 :componentInfo="box.info"
                 :tag="'span'"
@@ -229,7 +229,7 @@
         </div>
         <div v-if="componentType==='image'">
           <!-- {{currentBox}} -->
-            <image-config v-model="currentBox.info.attrs.src"/>
+          <image-config v-model="currentBox.info.attrs.src" />
         </div>
         <div v-if="componentType.indexOf('chart')>-1">
           <!-- {{currentBox}} -->
@@ -256,9 +256,11 @@
           <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
           <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
             <div>系列{{index+1}}名称</div>
-            <input v-model="serie.name"/>
-            <div>
-               <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+            <div class="flex-space-between">
+              <input v-model="serie.name" />
+              <div>
+                <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+              </div>
             </div>
           </div>
         </div>
@@ -319,6 +321,7 @@ export default {
 
   data () {
     return {
+      showSelectComponent: true,
       canvasScale: 0.5,
       appInfo: null,
       active: 0,
@@ -558,14 +561,14 @@ export default {
       if (box.type.indexOf('chart') > -1) {
         box.info.style.width = box.width + 'px'
         box.info.style.height = box.height + 'px'
-        console.warn(this.page.components)
+        box.show = false
         console.log('currentBox>>', this.currentBox)
       }
     },
 
     doneReset (box) {
-      console.log()
-      this.page.components.splice(this.selectedIdx, 1, this.currentBox)
+      console.log('box')
+      box.show = true
     },
 
     allowDrop (e) {
@@ -588,6 +591,7 @@ export default {
       let components = this.page.components
       if (this.dragItem === 'text') {
         components.push({
+          show: true,
           id: id,
           x: 300,
           y: 100,
@@ -612,6 +616,7 @@ export default {
       }
       if (this.dragItem === 'pic') {
         components.push({
+          show: true,
           id: 'f1',
           x: 300,
           y: 300,
@@ -635,6 +640,7 @@ export default {
 
       if (this.dragItem === 'chart-bar') {
         components.push({
+          show: true,
           id: id,
           x: 300,
           y: 300,
@@ -709,6 +715,7 @@ export default {
 
       if (this.dragItem === 'chart-line') {
         components.push({
+          show: true,
           id: id,
           x: 300,
           y: 300,
@@ -1033,11 +1040,9 @@ export default {
         const item = dataSource.data[0]
         console.log(item)
         for (let i = 1; i < item.length; i++) {
-          const data = dataSource.data.map(
-            e => {
-              return e[i]
-            }
-          )
+          const data = dataSource.data.map(e => {
+            return e[i]
+          })
           let serie = {
             name: `系列${i}`,
             type: type,
@@ -1129,10 +1134,10 @@ export default {
   border-right: 1px solid #bbb;
   padding: 10px;
 }
-.slider-scale{
+.slider-scale {
   position: absolute;
   bottom: 0;
-  left:100px;
+  left: 100px;
   width: 800px;
 }
 .canvas-body {

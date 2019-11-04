@@ -248,6 +248,7 @@ export default {
         this.preY = this.y
         this.DIRECTION[direction] = true
       } else {
+        console.log('p', p)
         this.canReSize = false
         this.DIRECTION = {
           LEFT: false,
@@ -255,8 +256,8 @@ export default {
           RIGHT: false,
           DOWN: false
         }
+        this.$emit('doneReset')
       }
-      this.$emit('doneReset')
     },
     setSizeCross (r, c) {
       this.setSize(1, r)
