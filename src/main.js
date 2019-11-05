@@ -22,7 +22,17 @@ import 'echarts/lib/component/dataZoom.js'
 import 'echarts/lib/component/markLine.js'
 import 'echarts/lib/component/grid.js'
 import ECharts from 'vue-echarts'
+import VTable from './components/common/VTable.vue'
+
+/**
+ * ########################################################################
+ * ########################################################################
+ * ################################全局组件################################
+ * ########################################################################
+ * ########################################################################
+ */
 Vue.component('v-echart', ECharts)
+Vue.component('v-table', VTable)
 
 Vue.config.productionTip = false
 new Vue({
