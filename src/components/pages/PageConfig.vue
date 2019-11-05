@@ -70,9 +70,12 @@
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-bar')">柱状图</div>
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-line')">折线图</div>
         <div class="component-drag" draggable="true" @dragstart="startDrag('chart-pie')">饼图</div>
+        <div class="component-drag" draggable="true" @dragstart="startDrag('table')">表格</div>
       </div>
     </div>
+
     <!-- ###################################画布 操作界面 ########################################-->
+
     <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas">
       <!-- <div class="slider-scale">
         <el-slider v-model="canvasScale" :step="10" @change="scaleCanvas"></el-slider>
@@ -110,9 +113,6 @@
             <div v-if="box.show" :id="box.id" style="width:100%;height:100%;">
               <v-render
                 :componentInfo="box.info"
-                :tag="'span'"
-                :attrs="box.info.attrs"
-                :content="box.info.content"
               ></v-render>
             </div>
           </v-transform>
@@ -353,7 +353,7 @@ export default {
       canvasScale: 0.5,
       appInfo: null,
       active: 0,
-      showNavigator: false,
+      showNavigator: true,
       showPages: false,
       // 页面
       page: {
@@ -432,7 +432,7 @@ export default {
     Vue.component('v-render', {
       render: function (createElement) {
         console.log('componentInfo', this.componentInfo)
-        if (this.componentInfo.hasOwnProperty('props')) {
+        if (this.componentInfo.tagName === 'v-echart') {
           return createElement(
             'div',
             {
@@ -470,7 +470,8 @@ export default {
                 this.componentInfo.tagName,
                 {
                   attrs: this.componentInfo.attrs,
-                  style: this.componentInfo.style
+                  style: this.componentInfo.style,
+                  props: this.componentInfo.props ? this.componentInfo.props : {}
                 },
                 _self.returnChild(this.componentInfo)
               )
@@ -618,15 +619,18 @@ export default {
       console.log(this.page)
       let components = this.page.components
       let newComponent = null
+      const defaultProp = {
+        show: true,
+        id: id,
+        x: 300,
+        y: 100,
+        width: 100,
+        height: 100,
+        rotate: 0
+      }
       if (this.dragItem === 'text') {
         newComponent = {
-          show: true,
-          id: id,
-          x: 300,
-          y: 100,
-          width: 100,
-          height: 100,
-          rotate: 0,
+          ...defaultProp,
           type: 'text',
           info: {
             tagName: 'div',
@@ -646,13 +650,7 @@ export default {
       }
       if (this.dragItem === 'pic') {
         newComponent = {
-          show: true,
-          id: 'f1',
-          x: 300,
-          y: 300,
-          width: 100,
-          height: 100,
-          rotate: 0,
+          ...defaultProp,
           type: 'image',
           info: {
             tagName: 'img',
@@ -671,13 +669,7 @@ export default {
 
       if (this.dragItem === 'chart-bar') {
         newComponent = {
-          show: true,
-          id: id,
-          x: 300,
-          y: 300,
-          width: 350,
-          height: 300,
-          rotate: 0,
+          ...defaultProp,
           type: 'chart-bar',
 
           info: {
@@ -747,15 +739,8 @@ export default {
 
       if (this.dragItem === 'chart-line') {
         newComponent = {
-          show: true,
-          id: id,
-          x: 300,
-          y: 300,
-          width: 350,
-          height: 300,
-          rotate: 0,
+          ...defaultProp,
           type: 'chart-line',
-
           info: {
             tagName: 'v-echart',
             style: {
@@ -810,15 +795,8 @@ export default {
 
       if (this.dragItem === 'chart-pie') {
         newComponent = {
-          show: true,
-          id: id,
-          x: 300,
-          y: 300,
-          width: 350,
-          height: 300,
-          rotate: 0,
+          ...defaultProp,
           type: 'chart-pie',
-
           info: {
             tagName: 'v-echart',
             style: {
@@ -885,6 +863,30 @@ export default {
                 ]
               },
               autoResize: 'true'
+            },
+            attrs: {
+              id: id
+            }
+          }
+        }
+        components.push(newComponent)
+        console.log(this.page)
+      }
+
+      if (this.dragItem === 'table') {
+        newComponent = {
+          ...defaultProp,
+          type: 'table',
+          info: {
+            tagName: 'v-table',
+            style: {
+              position: 'absolute',
+              width: '100%',
+              height: '100%'
+            },
+            props: {
+              showPagination: true,
+              data: []
             },
             attrs: {
               id: id

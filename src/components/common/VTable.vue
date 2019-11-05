@@ -9,12 +9,14 @@
       </tr>
     </table>
     <el-pagination
+      v-if="showPagination"
       background
       layout="prev, pager, next"
       @current-change="handleCurrentChange"
       :current-page.sync="pagination.currentPage"
       :page-size="pagination.pageSize"
       :total="pagination.total"
+      style="float:right;"
     ></el-pagination>
   </div>
 </template>
@@ -28,6 +30,12 @@ export default {
       type: Array,
       required: true,
       default: () => [[1, 2, 3], [4, 5, 6]]
+    },
+    // 配置信息
+    showPagination: {
+      type: Boolean,
+      required: false,
+      default: true
     }
   },
   data () {
@@ -40,6 +48,7 @@ export default {
     }
   },
   methods: {
+    // TODO 翻页
     handleCurrentChange () {}
   }
 }
