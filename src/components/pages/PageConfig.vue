@@ -564,13 +564,14 @@ export default {
 
     /**
      * 选中的组件
+     *  TODO 选中关闭当前数据源配置
      */
     setSelect (index) {
       this.selectedIdx = index
       this.configType = 'component'
 
       this.currentBox = this.page.components[index]
-      console.log(this.currentBox.type)
+      console.log(this.currentBox)
       this.componentType = this.currentBox.type
       console.log('index', index)
     },
@@ -669,7 +670,13 @@ export default {
 
       if (this.dragItem === 'chart-bar') {
         newComponent = {
-          ...defaultProp,
+          show: true,
+          id: id,
+          x: 300,
+          y: 100,
+          width: 350,
+          height: 300,
+          rotate: 0,
           type: 'chart-bar',
 
           info: {
@@ -739,7 +746,13 @@ export default {
 
       if (this.dragItem === 'chart-line') {
         newComponent = {
-          ...defaultProp,
+          show: true,
+          id: id,
+          x: 300,
+          y: 100,
+          width: 350,
+          height: 300,
+          rotate: 0,
           type: 'chart-line',
           info: {
             tagName: 'v-echart',
@@ -795,7 +808,13 @@ export default {
 
       if (this.dragItem === 'chart-pie') {
         newComponent = {
-          ...defaultProp,
+          show: true,
+          id: id,
+          x: 300,
+          y: 100,
+          width: 350,
+          height: 300,
+          rotate: 0,
           type: 'chart-pie',
           info: {
             tagName: 'v-echart',
@@ -829,15 +848,7 @@ export default {
                   formatter: '{a} <br/>{b} : {c} ({d}%)'
                 },
                 legend: {
-                  orient: 'vertical',
-                  left: 'left',
-                  data: [
-                    '直接访问',
-                    '邮件营销',
-                    '联盟广告',
-                    '视频广告',
-                    '搜索引擎'
-                  ]
+                  show: true
                 },
                 series: [
                   {
