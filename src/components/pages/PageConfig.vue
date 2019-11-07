@@ -886,7 +886,13 @@ export default {
 
       if (this.dragItem === 'table') {
         newComponent = {
-          ...defaultProp,
+          show: true,
+          id: id,
+          x: 300,
+          y: 100,
+          width: 400,
+          height: 200,
+          rotate: 0,
           type: 'table',
           info: {
             tagName: 'v-table',
@@ -897,7 +903,7 @@ export default {
             },
             props: {
               showPagination: true,
-              data: []
+              data: [[1, 2, 3], [4, 5, 6]]
             },
             attrs: {
               id: id
