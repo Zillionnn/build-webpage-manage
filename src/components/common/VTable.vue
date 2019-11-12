@@ -2,9 +2,9 @@
   <div>
     <table>
       <tr style="background:#cccccc;">
-        <th v-for="(field,index) in data[0]" :key="index">系列{{index+1}}</th>
+        <th v-for="(field,index) in data.list[0]" :key="index">系列{{index+1}}</th>
       </tr>
-      <tr v-for="(row,index) in data" :key="index">
+      <tr v-for="(row,index) in data.list" :key="index">
         <td v-for="(item, index) in row" :key="index">{{item}}</td>
       </tr>
     </table>

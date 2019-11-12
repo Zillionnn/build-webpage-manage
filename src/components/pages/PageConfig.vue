@@ -289,6 +289,24 @@
 
         </div>
 
+        <div v-if="componentType.indexOf('table')>-1">
+
+           <div>
+            <span>配置数据源</span>
+            <i
+              v-if="!currentBox.info.dataSource"
+              class="icon-database"
+              style="color:#bbb;"
+              @click="toggleDataSource('chart')"
+            ></i>
+            <span style="width: 50px;" v-else>
+              <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('table')"></i>
+              <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
+            </span>
+          </div>
+
+        </div>
+
         <!-- ######### 配置数据源######### -->
         <config-text-data-source
           :dataSourceConfigType="dataSourceConfigType"
@@ -649,6 +667,8 @@ export default {
         }
         components.push(newComponent)
       }
+
+      // 图
       if (this.dragItem === 'pic') {
         newComponent = {
           ...defaultProp,
@@ -668,6 +688,7 @@ export default {
         components.push(newComponent)
       }
 
+      // 柱状图
       if (this.dragItem === 'chart-bar') {
         newComponent = {
           show: true,
@@ -744,6 +765,7 @@ export default {
         console.log(this.page)
       }
 
+      // 折线图
       if (this.dragItem === 'chart-line') {
         newComponent = {
           show: true,
@@ -806,6 +828,7 @@ export default {
         console.log(this.page)
       }
 
+      // 饼图
       if (this.dragItem === 'chart-pie') {
         newComponent = {
           show: true,
@@ -884,6 +907,7 @@ export default {
         console.log(this.page)
       }
 
+      // 表格
       if (this.dragItem === 'table') {
         newComponent = {
           show: true,
@@ -1209,6 +1233,8 @@ export default {
           this.currentBox.info.props.options.series.push(serie)
         }
         console.log(this.currentBox.info.props.options)
+      } else if (this.currentBox.type.indexOf('table') > -1) {
+        this.currentBox.info.props.data = dataSource.data
       }
 
       console.log(this.page)
