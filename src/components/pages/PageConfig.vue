@@ -325,11 +325,11 @@
         <!-- 交互 -->
         <div v-if="componentConfigActiveTab===2" style="padding: 12px;">
           <div class="event-list">
-            <div v-for="(item, index) in this.currentBox.eventList" :key="index">
-              <event-config :info="item"/>
+            <div v-for="(item, index) in currentBox.eventList" :key="index">
+              <event-info-box :componentType="currentBox.type" :info="item" :index="index" @remove="removeEvent"/>
             </div>
           </div>
-          <button class="next-btn">新增交互</button>
+          <button class="next-btn" @click="addCurrentBoxEvent">新增交互</button>
         </div>
 
       </div>
@@ -359,6 +359,7 @@ import VTransform from '@/components/common/VTransform.vue'
 import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
 import ConfigTextDataSource from './component/ConfigTextDataSource.vue'
 import ImageConfig from './component/ImageConfig.vue'
+import EventInfoBox from './component/EventInfoBox.vue'
 
 export default {
   name: 'PageConfig',
@@ -366,7 +367,8 @@ export default {
     VTransform,
     LayoutThumbnail,
     ConfigTextDataSource,
-    ImageConfig
+    ImageConfig,
+    EventInfoBox
   },
   computed: {
     appId () {
@@ -665,13 +667,13 @@ export default {
         y: 100,
         width: 100,
         height: 100,
-        rotate: 0
+        rotate: 0,
+        eventList: []
       }
       if (this.dragItem === 'text') {
         newComponent = {
           ...defaultProp,
           type: 'text',
-          eventList: [],
           info: {
             tagName: 'div',
             attrs: {
@@ -720,7 +722,7 @@ export default {
           height: 300,
           rotate: 0,
           type: 'chart-bar',
-
+          eventList: [],
           info: {
             tagName: 'v-echart',
             style: {
@@ -796,6 +798,7 @@ export default {
           width: 350,
           height: 300,
           rotate: 0,
+          eventList: [],
           type: 'chart-line',
           info: {
             tagName: 'v-echart',
@@ -859,6 +862,7 @@ export default {
           width: 350,
           height: 300,
           rotate: 0,
+          eventList: [],
           type: 'chart-pie',
           info: {
             tagName: 'v-echart',
@@ -938,6 +942,7 @@ export default {
           width: 400,
           height: 200,
           rotate: 0,
+          eventList: [],
           type: 'table',
           info: {
             tagName: 'v-table',
@@ -1319,6 +1324,23 @@ export default {
     clearDataSource () {
       this.currentBox.info.dataSource = null
       console.log(this.page)
+    },
+    /**
+     * 添加交互事件
+     */
+    addCurrentBoxEvent () {
+      console.log(this.currentBox)
+      this.currentBox.eventList.push({
+        eventType: 0,
+        actionType: 0
+      })
+    },
+    /**
+     *
+     * 删除一个event
+     */
+    removeEvent (idx) {
+      this.currentBox.eventList.splice(idx, 1)
     }
     // ###########################methods#########################
   }
