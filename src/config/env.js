@@ -47,5 +47,26 @@ export default{
         value: 2
       }
     ]
+  },
+
+  /**
+   * 动作的list
+   */
+  actionTypeList: {
+    text: [],
+    table: [
+      {
+        label: '打开链接',
+        value: 0
+      },
+      {
+        label: '赋值给变量',
+        value: 1
+      },
+      {
+        label: '调用设备服务',
+        value: 2
+      }
+    ]
   }
 }
