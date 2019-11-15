@@ -18,6 +18,9 @@ export default{
     {'name': 72, 'value': '72px'}
   ],
 
+  /**
+   * 交互事件 list
+   */
   eventTypeList: {
     text: [
 
