@@ -927,7 +927,10 @@ export default {
             },
             props: {
               showPagination: true,
-              data: [[1, 2, 3], [4, 5, 6]]
+              data: {
+                list: [[1, 2, 3], [4, 5, 6]],
+                total: 15
+              }
             },
             attrs: {
               id: id
