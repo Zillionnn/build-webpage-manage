@@ -184,6 +184,12 @@
         <button @click="addParentMenu()">新增主菜单</button>
       </div>
       <div v-if="configType==='component'" class="config_">
+        <div class="component-config-tab">
+          <a :class="{'tab-active': componentConfigActiveTab===1}" @click="componentConfigActiveTab=1">样式</a>
+          <a :class="{'tab-active': componentConfigActiveTab===2}" @click="componentConfigActiveTab=2">交互</a>
+        </div>
+        <!-- 样式 -->
+        <div v-if="componentConfigActiveTab===1">
         x:
         <input v-model="currentBox.x" />
         y:
@@ -315,6 +321,17 @@
           @assignDataSource="subDataSource"
           @toggleDataSource="toggleDataSource"
         />
+        </div>
+        <!-- 交互 -->
+        <div v-if="componentConfigActiveTab===2" style="padding: 12px;">
+          <div class="event-list">
+            <div v-for="(item, index) in this.currentBox.eventList" :key="index">
+              <event-config :info="item"/>
+            </div>
+          </div>
+          <button class="next-btn">新增交互</button>
+        </div>
+
       </div>
     </div>
 
@@ -423,7 +440,10 @@ export default {
         method: 'get',
         url: '',
         data: null
-      }
+      },
+
+      componentConfigActiveTab: 1
+      // ###### return ######
     }
   },
   watch: {
@@ -651,6 +671,7 @@ export default {
         newComponent = {
           ...defaultProp,
           type: 'text',
+          eventList: [],
           info: {
             tagName: 'div',
             attrs: {
@@ -1429,5 +1450,33 @@ export default {
 .left-nav-menu-item {
   padding: 10px;
   text-align: center;
+}
+.component-config-tab{
+  display: flex;
+}
+.component-config-tab a{
+  width: 50%;
+  flex: 1 1;
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  background: #f2f2f2;
+}
+.tab-active{
+  background: #ffffff !important;
+}
+
+.next-btn{
+  color: #333;
+  border:1px solid #c6cbd1;
+  background: #f9f9f9;
+  border-radius: 3px;
+  padding: 0 16px;
+  line-height: 30px;
+  font-size: 14px;
+  width: 100%;
+  cursor: pointer;
 }
 </style>
