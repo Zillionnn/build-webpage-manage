@@ -16,5 +16,33 @@ export default{
 
     {'name': 64, 'value': '64px'},
     {'name': 72, 'value': '72px'}
-  ]
+  ],
+
+  eventTypeList: {
+    text: [
+
+      {
+        label: '点击',
+        value: 0
+      },
+      {
+        label: '双击',
+        value: 2
+      }
+    ],
+    table: [
+      {
+        label: '点击单元格',
+        value: 0
+      },
+      {
+        label: '翻页',
+        value: 1
+      },
+      {
+        label: '双击单元格',
+        value: 2
+      }
+    ]
+  }
 }
