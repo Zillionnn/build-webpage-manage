@@ -511,7 +511,14 @@ export default {
                 {
                   attrs: this.componentInfo.attrs,
                   style: this.componentInfo.style,
-                  props: this.componentInfo.props ? this.componentInfo.props : {}
+                  props: this.componentInfo.props ? this.componentInfo.props : {},
+                  on: {
+                    changePage: (p) => {
+                      _self.doEvent(this.componentInfo, p)
+                    },
+                    // TODO
+                    click: () => {}
+                  }
                 },
                 _self.returnChild(this.componentInfo)
               )
@@ -958,6 +965,18 @@ export default {
                 total: 15
               }
             },
+            on: {
+              changePage: (p) => {
+                // TODO
+                console.log('CHANGE >>', p)
+                this.resetData(p)
+                // console.log(this.componentInfo)
+                // const method = this.componentInfo.dataSource.method
+                // const url = this.componentInfo.dataSource.url + `?offset=${p * 10}&limit=${10}`
+                // const r = $http[method](url)
+                // this.componentInfo.dataSource.data = r.data
+              }
+            },
             attrs: {
               id: id
             }
@@ -1341,6 +1360,24 @@ export default {
      */
     removeEvent (idx) {
       this.currentBox.eventList.splice(idx, 1)
+    },
+
+    doEvent (component, p) {
+      console.log('>>>doEvent>>>>>>', this.currentBox.eventList)
+      // 翻页
+      if (this.currentBox.eventList[0].eventType === 1) {
+        this.resetData(this.currentBox, p)
+      }
+    },
+
+    /**
+     * 组件事件重新render data
+     */
+    resetData (currentBox, p) {
+      const method = currentBox.info.dataSource.method
+      const url = currentBox.info.dataSource.url + `?offset=${p * 10}&limit=${10}`
+      const r = $http[method](url)
+      currentBox.info.dataSource.data = r.data
     }
     // ###########################methods#########################
   }
