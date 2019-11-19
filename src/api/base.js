@@ -91,7 +91,19 @@ export default{
   },
 
   updateAppInfo (app) {
-    return $http.put(url + `/api/app/${app.id}`, app)
+    return $http.put(url + `/api/app/${app.id}`, {
+      id: app.id,
+      name: app.name,
+      layout: app.layout,
+      top_bg_color: app.menuConfig.top.backgroundColor,
+      logo: app.menuConfig.top.logo,
+      app_name: app.menuConfig.top.appName,
+      show_app_name: false,
+      side_bg_color: app.menuConfig.left.backgroundColor,
+      side_text_color: app.menuConfig.left.menu.textColor,
+      side_text_active_color: app.menuConfig.left.textActiveColor,
+      app_name_color: ''
+    })
   }
 
 }

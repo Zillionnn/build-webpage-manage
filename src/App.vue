@@ -34,4 +34,8 @@ body,html{
   justify-content: space-between;
   align-items: center;
 }
+.flex-align-items-center{
+  display: flex;
+  align-items: center;
+}
 </style>

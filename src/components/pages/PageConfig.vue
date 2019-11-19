@@ -111,9 +111,7 @@
             @doneReset="doneReset(box)"
           >
             <div v-if="box.show" :id="box.id" style="width:100%;height:100%;">
-              <v-render
-                :componentInfo="box.info"
-              ></v-render>
+              <v-render :componentInfo="box.info"></v-render>
             </div>
           </v-transform>
         </div>
@@ -175,6 +173,48 @@
       </div>
       <!-- 菜单列表 -->
       <div v-if="configType==='menu'" class="config_">
+        <div class="component-config-tab">
+          <a :class="{'tab-active': menuConfigActiveTab===1}" @click="menuConfigActiveTab=1">左导航</a>
+          <a :class="{'tab-active': menuConfigActiveTab===2}" @click="menuConfigActiveTab=2">顶部</a>
+        </div>
+
+        <!-- ########################## 左导航 ###################### -->
+        <div v-if="menuConfigActiveTab===1">
+          <div class="flex-align-items-center">
+            <label>背景</label>
+            <el-color-picker v-model="menuConfig.left.backgroundColor"></el-color-picker>
+          </div>
+
+          <div>
+            <p>菜单样式</p>
+            <div class="flex-align-items-center">
+              <span>背景色</span>
+              <el-color-picker v-model="menuConfig.left.menu.backgroundColor"></el-color-picker>
+            </div>
+            <div class="flex-align-items-center">
+              <span>文字默认色</span>
+              <el-color-picker v-model="menuConfig.left.menu.textColor"></el-color-picker>
+            </div>
+            <div class="flex-align-items-center">
+              <span>文字选中色</span>
+              <el-color-picker v-model="menuConfig.left.menu.textActiveColor"></el-color-picker>
+            </div>
+          </div>
+        </div>
+        <!-- ########################## 顶部 ###################### -->
+        <div v-if="menuConfigActiveTab===2">
+          <label>顶部栏背景</label>
+          <el-color-picker v-model="menuConfig.top.backgroundColor"></el-color-picker>
+          <div>
+            <label>logo</label>
+            <button>上传</button>
+          </div>
+          <div>
+            <label>应用名称</label>
+            <input type="text" v-model="menuConfig.top.appName"/>
+          </div>
+        </div>
+
         <div class="tab-title">菜单配置</div>
         <div class="menu-list" v-for="(item,index) in menuList" :key="index">
           {{item.name}}
@@ -185,153 +225,164 @@
       </div>
       <div v-if="configType==='component'" class="config_">
         <div class="component-config-tab">
-          <a :class="{'tab-active': componentConfigActiveTab===1}" @click="componentConfigActiveTab=1">样式</a>
-          <a :class="{'tab-active': componentConfigActiveTab===2}" @click="componentConfigActiveTab=2">交互</a>
+          <a
+            :class="{'tab-active': componentConfigActiveTab===1}"
+            @click="componentConfigActiveTab=1"
+          >样式</a>
+          <a
+            :class="{'tab-active': componentConfigActiveTab===2}"
+            @click="componentConfigActiveTab=2"
+          >交互</a>
         </div>
         <!-- 样式 -->
         <div v-if="componentConfigActiveTab===1">
-        x:
-        <input v-model="currentBox.x" />
-        y:
-        <input v-model="currentBox.y" />
-        宽:
-        <input v-model="currentBox.width" />
-        高:
-        <input v-model="currentBox.height" />
-        角度:
-        <input v-model="currentBox.rotate" />
-        <div v-if="componentType==='text'">
-          <!-- {{currentBox}} -->
-          内容:
-          <div class="flex-space-between">
-            <input v-model="currentBox.info.content" />
-            <i
-              v-if="!currentBox.info.dataSource"
-              class="icon-database"
-              style="color:#bbb;"
-              @click="toggleDataSource('text')"
-            ></i>
-            <span style="width: 50px;" v-else>
-              <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('text')"></i>
-              <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
-            </span>
-          </div>
-
-          <div>
-            <span>颜色:</span>
-            <el-color-picker v-model="currentBox.info.style.color"></el-color-picker>
-          </div>
-
-          <div>
-            <span>字号:</span>
-            <el-select v-model="currentBox.info.style.fontSize">
-              <el-option
-                v-for="(item,index) in fontSizeList"
-                :key="index"
-                :value="item.value"
-              >{{item.name}}</el-option>
-            </el-select>
-          </div>
-        </div>
-
-        <!-- IMAGE CONFIG -->
-        <div v-if="componentType==='image'">
-          <!-- {{currentBox}} -->
-          <image-config v-model="currentBox.info.attrs.src" />
-        </div>
-
-        <!-- CHART CONFIG -->
-        <div v-if="componentType.indexOf('chart')>-1">
-          <!-- {{currentBox}} -->
-          width:
-          <input v-model="currentBox.info.style.width" />
-          height:
-          <input v-model="currentBox.info.style.height" />
-          <!-- 配置数据源 -->
-          <div>
-            <span>配置数据源</span>
-            <i
-              v-if="!currentBox.info.dataSource"
-              class="icon-database"
-              style="color:#bbb;"
-              @click="toggleDataSource('chart')"
-            ></i>
-            <span style="width: 50px;" v-else>
-              <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('chart')"></i>
-              <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
-            </span>
-          </div>
-          <div v-if="!isPie">
-            <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
-            <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
-          </div>
-          <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
-
-          <div v-if="!isPie">
-            <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
-              <div>系列{{index+1}}名称</div>
-              <div class="flex-space-between">
-                <input v-model="serie.name" />
-                <div>
-                  <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
-                </div>
-              </div>
+          x:
+          <input v-model="currentBox.x" />
+          y:
+          <input v-model="currentBox.y" />
+          宽:
+          <input v-model="currentBox.width" />
+          高:
+          <input v-model="currentBox.height" />
+          角度:
+          <input v-model="currentBox.rotate" />
+          <div v-if="componentType==='text'">
+            <!-- {{currentBox}} -->
+            内容:
+            <div class="flex-space-between">
+              <input v-model="currentBox.info.content" />
+              <i
+                v-if="!currentBox.info.dataSource"
+                class="icon-database"
+                style="color:#bbb;"
+                @click="toggleDataSource('text')"
+              ></i>
+              <span style="width: 50px;" v-else>
+                <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('text')"></i>
+                <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
+              </span>
             </div>
-          </div>
-          <div v-else>
+
             <div>
-               标题 <input v-model="currentBox.info.props.options.title.text" />
+              <span>颜色:</span>
+              <el-color-picker v-model="currentBox.info.style.color"></el-color-picker>
             </div>
-             <div v-for="(serie,index) in currentBox.info.props.options.series[0].data" :key="index">
-              <div>系列{{index+1}}名称</div>
-              <div class="flex-space-between">
-                <span>{{serie.name}}</span>
-                <div>
-                  <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+
+            <div>
+              <span>字号:</span>
+              <el-select v-model="currentBox.info.style.fontSize">
+                <el-option
+                  v-for="(item,index) in fontSizeList"
+                  :key="index"
+                  :value="item.value"
+                >{{item.name}}</el-option>
+              </el-select>
+            </div>
+          </div>
+
+          <!-- IMAGE CONFIG -->
+          <div v-if="componentType==='image'">
+            <!-- {{currentBox}} -->
+            <image-config v-model="currentBox.info.attrs.src" />
+          </div>
+
+          <!-- CHART CONFIG -->
+          <div v-if="componentType.indexOf('chart')>-1">
+            <!-- {{currentBox}} -->
+            width:
+            <input v-model="currentBox.info.style.width" />
+            height:
+            <input v-model="currentBox.info.style.height" />
+            <!-- 配置数据源 -->
+            <div>
+              <span>配置数据源</span>
+              <i
+                v-if="!currentBox.info.dataSource"
+                class="icon-database"
+                style="color:#bbb;"
+                @click="toggleDataSource('chart')"
+              ></i>
+              <span style="width: 50px;" v-else>
+                <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('chart')"></i>
+                <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
+              </span>
+            </div>
+            <div v-if="!isPie">
+              <el-checkbox v-model="currentBox.info.props.options.xAxis.axisLabel.show">显示x轴</el-checkbox>
+              <el-checkbox v-model="currentBox.info.props.options.yAxis.axisLabel.show">显示y轴</el-checkbox>
+            </div>
+            <el-checkbox v-model="currentBox.info.props.options.legend.show">显示图例</el-checkbox>
+
+            <div v-if="!isPie">
+              <div v-for="(serie,index) in currentBox.info.props.options.series" :key="index">
+                <div>系列{{index+1}}名称</div>
+                <div class="flex-space-between">
+                  <input v-model="serie.name" />
+                  <div>
+                    <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <div>
+                标题
+                <input v-model="currentBox.info.props.options.title.text" />
+              </div>
+              <div
+                v-for="(serie,index) in currentBox.info.props.options.series[0].data"
+                :key="index"
+              >
+                <div>系列{{index+1}}名称</div>
+                <div class="flex-space-between">
+                  <span>{{serie.name}}</span>
+                  <div>
+                    <el-color-picker v-model="currentBox.info.props.options.color[index]"></el-color-picker>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-        </div>
-
-        <div v-if="componentType.indexOf('table')>-1">
-
-           <div>
-            <span>配置数据源</span>
-            <i
-              v-if="!currentBox.info.dataSource"
-              class="icon-database"
-              style="color:#bbb;"
-              @click="toggleDataSource('chart')"
-            ></i>
-            <span style="width: 50px;" v-else>
-              <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('table')"></i>
-              <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
-            </span>
+          <div v-if="componentType.indexOf('table')>-1">
+            <div>
+              <span>配置数据源</span>
+              <i
+                v-if="!currentBox.info.dataSource"
+                class="icon-database"
+                style="color:#bbb;"
+                @click="toggleDataSource('chart')"
+              ></i>
+              <span style="width: 50px;" v-else>
+                <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('table')"></i>
+                <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
+              </span>
+            </div>
           </div>
 
-        </div>
-
-        <!-- ######### 配置数据源######### -->
-        <config-text-data-source
-          :dataSourceConfigType="dataSourceConfigType"
-          :showDataSource="showDataSource"
-          :boxDataSource="currentBox.info.dataSource"
-          @assignDataSource="subDataSource"
-          @toggleDataSource="toggleDataSource"
-        />
+          <!-- ######### 配置数据源######### -->
+          <config-text-data-source
+            :dataSourceConfigType="dataSourceConfigType"
+            :showDataSource="showDataSource"
+            :boxDataSource="currentBox.info.dataSource"
+            @assignDataSource="subDataSource"
+            @toggleDataSource="toggleDataSource"
+          />
         </div>
         <!-- 交互 -->
         <div v-if="componentConfigActiveTab===2" style="padding: 12px;">
           <div class="event-list">
             <div v-for="(item, index) in currentBox.eventList" :key="index">
-              <event-info-box :componentType="currentBox.type" :info="item" :index="index" @remove="removeEvent"/>
+              <event-info-box
+                :componentType="currentBox.type"
+                :info="item"
+                :index="index"
+                @remove="removeEvent"
+              />
             </div>
           </div>
           <button class="next-btn" @click="addCurrentBoxEvent">新增交互</button>
         </div>
-
       </div>
     </div>
 
@@ -444,7 +495,23 @@ export default {
         data: null
       },
 
-      componentConfigActiveTab: 1
+      componentConfigActiveTab: 1,
+      menuConfigActiveTab: 1,
+      menuConfig: {
+        top: {
+          backgroundColor: '#000000',
+          appName: '',
+          logo: ''
+        },
+        left: {
+          backgroundColor: '#000000',
+          menu: {
+            backgroundColor: '#000000',
+            textColor: '#ffffff',
+            textActiveColor: '#00cd2f'
+          }
+        }
+      }
       // ###### return ######
     }
   },
@@ -511,9 +578,11 @@ export default {
                 {
                   attrs: this.componentInfo.attrs,
                   style: this.componentInfo.style,
-                  props: this.componentInfo.props ? this.componentInfo.props : {},
+                  props: this.componentInfo.props
+                    ? this.componentInfo.props
+                    : {},
                   on: {
-                    changePage: (p) => {
+                    changePage: p => {
                       _self.doEvent(this.componentInfo, p)
                     },
                     // TODO
@@ -568,6 +637,7 @@ export default {
         .then(res => {
           this.appInfo = res.data.data
           this.layout = this.appInfo.layout
+          this.menuConfig = this.appInfo.menuConfig
         })
         .catch(err => {
           console.error(err)
@@ -966,7 +1036,7 @@ export default {
               }
             },
             on: {
-              changePage: (p) => {
+              changePage: p => {
                 // TODO
                 console.log('CHANGE >>', p)
                 this.resetData(p)
@@ -1121,7 +1191,10 @@ export default {
         let componentInfo = JSON.parse(e)
         console.log('selectedPage jsonObj>>>>', e, componentInfo)
 
-        if (componentInfo.info.dataSource !== undefined && componentInfo.info.dataSource) {
+        if (
+          componentInfo.info.dataSource !== undefined &&
+          componentInfo.info.dataSource
+        ) {
           const method = componentInfo.info.dataSource.method
           const url = componentInfo.info.dataSource.url
           const r = await $http[method](url)
@@ -1165,6 +1238,7 @@ export default {
      */
     saveAppLayout () {
       this.appInfo.layout = this.layout
+      this.appInfo.menuConfig = this.menuConfig
       api.base
         .updateAppInfo(this.appInfo)
         .then(res => {
@@ -1309,11 +1383,9 @@ export default {
         } else {
           type = 'line'
         }
-        component.info.props.options.xAxis.data = dataSource.data.map(
-          e => {
-            return e[0]
-          }
-        )
+        component.info.props.options.xAxis.data = dataSource.data.map(e => {
+          return e[0]
+        })
         const seriesNameList = component.info.props.options.series.map(e => {
           return e.name
         })
@@ -1375,7 +1447,8 @@ export default {
      */
     resetData (currentBox, p) {
       const method = currentBox.info.dataSource.method
-      const url = currentBox.info.dataSource.url + `?offset=${p * 10}&limit=${10}`
+      const url =
+        currentBox.info.dataSource.url + `?offset=${p * 10}&limit=${10}`
       const r = $http[method](url)
       currentBox.info.dataSource.data = r.data
     }
@@ -1510,10 +1583,10 @@ export default {
   padding: 10px;
   text-align: center;
 }
-.component-config-tab{
+.component-config-tab {
   display: flex;
 }
-.component-config-tab a{
+.component-config-tab a {
   width: 50%;
   flex: 1 1;
   height: 32px;
@@ -1523,13 +1596,13 @@ export default {
   cursor: pointer;
   background: #f2f2f2;
 }
-.tab-active{
+.tab-active {
   background: #ffffff !important;
 }
 
-.next-btn{
+.next-btn {
   color: #333;
-  border:1px solid #c6cbd1;
+  border: 1px solid #c6cbd1;
   background: #f9f9f9;
   border-radius: 3px;
   padding: 0 16px;
