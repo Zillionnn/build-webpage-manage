@@ -174,12 +174,12 @@
       <!-- 菜单列表 -->
       <div v-if="configType==='menu'" class="config_">
         <div class="component-config-tab">
-          <a :class="{'tab-active': menuConfigActiveTab===1}" @click="menuConfigActiveTab=1">左导航</a>
-          <a :class="{'tab-active': menuConfigActiveTab===2}" @click="menuConfigActiveTab=2">顶部</a>
+          <a v-if=" layout.indexOf('left')>-1" :class="{'tab-active': menuConfigActiveTab===1 && layout.indexOf('top')>-1}" @click="menuConfigActiveTab=1">左导航</a>
+          <a v-if=" layout.indexOf('top')>-1" :class="{'tab-active': menuConfigActiveTab===2 && layout.indexOf('left')>-1}" @click="menuConfigActiveTab=2">顶部</a>
         </div>
 
         <!-- ########################## 左导航 ###################### -->
-        <div v-if="menuConfigActiveTab===1">
+        <div v-if="layout.indexOf('left-nav')===0 || layout.indexOf('left-top-nav')>-1  && menuConfigActiveTab===1">
           <div class="flex-align-items-center">
             <label>背景</label>
             <el-color-picker v-model="menuConfig.left.backgroundColor"></el-color-picker>
@@ -202,7 +202,7 @@
           </div>
         </div>
         <!-- ########################## 顶部 ###################### -->
-        <div v-if="menuConfigActiveTab===2">
+        <div v-if="layout.indexOf('top-nav')===0 || layout.indexOf('left-top-nav')>-1 && menuConfigActiveTab===2">
           <label>顶部栏背景</label>
           <el-color-picker v-model="menuConfig.top.backgroundColor"></el-color-picker>
           <div>
@@ -637,7 +637,9 @@ export default {
         .then(res => {
           this.appInfo = res.data.data
           this.layout = this.appInfo.layout
-          this.menuConfig = this.appInfo.menuConfig
+          if (this.appInfo.menuConfig) {
+            this.menuConfig = this.appInfo.menuConfig
+          }
         })
         .catch(err => {
           console.error(err)
@@ -1073,6 +1075,7 @@ export default {
     },
 
     setLayout (p) {
+      console.log(p)
       this.layout = p
     },
 
