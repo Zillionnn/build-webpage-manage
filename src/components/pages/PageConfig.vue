@@ -87,8 +87,8 @@
         @dragover="allowDrop"
         @drop="drop"
       >
-        <div class="top-nav"></div>
-        <div class="left-nav">
+        <div class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`"></div>
+        <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
           <div
             class="left-nav-menu-item"
             v-for="(item,index) in menuList"
@@ -187,10 +187,10 @@
 
           <div>
             <p>菜单样式</p>
-            <div class="flex-align-items-center">
+            <!-- <div class="flex-align-items-center">
               <span>背景色</span>
               <el-color-picker v-model="menuConfig.left.menu.backgroundColor"></el-color-picker>
-            </div>
+            </div> -->
             <div class="flex-align-items-center">
               <span>文字默认色</span>
               <el-color-picker v-model="menuConfig.left.menu.textColor"></el-color-picker>
