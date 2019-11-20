@@ -87,7 +87,11 @@
         @dragover="allowDrop"
         @drop="drop"
       >
-        <div class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`"></div>
+        <div class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`">
+          <div class="logo">
+            <img :src="menuConfig.top.logo" />
+          </div>
+        </div>
         <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
           <div
             class="left-nav-menu-item"
@@ -208,6 +212,7 @@
           <div>
             <label>logo</label>
             <button>上传</button>
+            <input type="text" v-model="menuConfig.top.logo"/>
           </div>
           <div>
             <label>应用名称</label>
@@ -1572,6 +1577,14 @@ export default {
   position: absolute;
   top: 0px;
   left: 0px;
+}
+.logo{
+  width: 100px;
+  height: 100%;
+}
+.logo img{
+  width: 100%;
+  height: 100%;
 }
 .left-nav {
   background: #000000;
