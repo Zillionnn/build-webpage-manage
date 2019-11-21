@@ -125,6 +125,7 @@
           <div class="logo">
             <img :src="menuConfig.top.logo" />
           </div>
+          <span>{{menuConfig.top.appName}}</span>
         </div>
         <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
           <div
@@ -1634,6 +1635,9 @@ export default {
   position: absolute;
   top: 0px;
   left: 0px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 .logo {
   width: 100px;
