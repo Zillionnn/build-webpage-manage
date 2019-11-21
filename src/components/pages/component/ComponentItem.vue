@@ -1,5 +1,5 @@
 <template>
- <div class="component-item" @dragstart="dragstart" @mouseover="toggleTip" @mouseleave="toggleTip">
+ <div class="component-item" @dragstart="dragstart" @mouseover="toggleTip(true)" @mouseleave="toggleTip(false)">
      <div style="text-align:center;">
          <i :class="icon"></i>
      </div>
@@ -31,8 +31,8 @@ export default {
       this.$emit('dragstart')
     },
 
-    toggleTip () {
-      this.$emit('toggleTip')
+    toggleTip (b) {
+      this.$emit('toggleTip', b)
     }
   }
 }
@@ -40,7 +40,7 @@ export default {
 
 <style scoped>
 .component-item{
-    width: 70px;
-    margin: 10px;
+    width: 50%;
+    margin: 10px 0;
 }
 </style>

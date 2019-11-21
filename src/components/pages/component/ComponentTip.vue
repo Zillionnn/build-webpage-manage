@@ -34,6 +34,22 @@ export default {
         image: {
           title: '图',
           des: '展示图片资源'
+        },
+        chart_bar: {
+          title: '柱状图',
+          des: '数据用柱状图展示'
+        },
+        chart_line: {
+          title: '折线图',
+          des: '数据用折线图展示'
+        },
+        chart_pie: {
+          title: '饼图',
+          des: '数据用饼图展示'
+        },
+        table: {
+          title: '表格',
+          des: '数据用表格展示'
         }
       }
     }

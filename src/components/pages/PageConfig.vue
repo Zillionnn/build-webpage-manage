@@ -69,11 +69,11 @@
             :icon="'icon-text-height'"
             draggable="true"
             @dragstart="startDrag('text')"
-            @toggleTip="toggleTip('text')"
+            @toggleTip="toggleTip('text', arguments)"
           >文字</component-item>
           <component-item
             :icon="'icon-image'"
-            @toggleTip="toggleTip('image')"
+            @toggleTip="toggleTip('image',arguments)"
             draggable="true"
             @dragstart="startDrag('pic')"
           >图片</component-item>
@@ -81,27 +81,32 @@
             :icon="'icon-chart-bar-solid'"
             draggable="true"
             @dragstart="startDrag('chart-bar')"
-            @toggleTip="toggleTip('chart-bar')"
+            @toggleTip="toggleTip('chart_bar', arguments)"
           >柱状图</component-item>
           <component-item
             :icon="'icon-chart-line-solid'"
             draggable="true"
             @dragstart="startDrag('chart-line')"
-            @toggleTip="toggleTip('chart-line')"
+            @toggleTip="toggleTip('chart_line', arguments)"
           >折线图</component-item>
           <component-item
             :icon="'icon-pie-chart'"
             draggable="true"
             @dragstart="startDrag('chart-pie')"
-            @toggleTip="toggleTip('chart-pie')"
+            @toggleTip="toggleTip('chart_pie', arguments)"
           >饼图</component-item>
-          <component-item :icon="'icon-table'" draggable="true" @dragstart="startDrag('table')">表格</component-item>
+          <component-item
+            :icon="'icon-table'"
+            draggable="true"
+            @dragstart="startDrag('table')"
+            @toggleTip="toggleTip('table', arguments)"
+          >表格</component-item>
         </div>
       </div>
     </div>
     <div class="componentip" v-show="showComponentTip">
-        <component-tip :type="showComponentTipType" />
-      </div>
+      <component-tip :showComponentTipType="showComponentTipType" />
+    </div>
 
     <!-- ###################################画布 操作界面 ########################################-->
 
@@ -458,6 +463,7 @@ import ConfigTextDataSource from './component/ConfigTextDataSource.vue'
 import ImageConfig from './component/ImageConfig.vue'
 import EventInfoBox from './component/EventInfoBox.vue'
 import ComponentItem from './component/ComponentItem.vue'
+import ComponentTip from './component/ComponentTip.vue'
 
 export default {
   name: 'PageConfig',
@@ -467,7 +473,8 @@ export default {
     ConfigTextDataSource,
     ImageConfig,
     EventInfoBox,
-    ComponentItem
+    ComponentItem,
+    ComponentTip
   },
   computed: {
     appId () {
@@ -1505,9 +1512,10 @@ export default {
       currentBox.info.dataSource.data = r.data
     },
 
-    toggleTip (type) {
+    toggleTip (type, args) {
       this.showComponentTipType = type
-      this.showComponentTip = !this.showComponentTip
+      console.log(this.showComponentTipType, args)
+      this.showComponentTip = args[0]
     }
     // ###########################methods#########################
   }
@@ -1682,13 +1690,14 @@ export default {
   margin-top: 30px;
   position: relative;
 }
-.componentip{
-         width: 200px;
-         height:100px;
-         position: absolute;
-         top : 55px;
-         left: 298px;
-         border: 1px solid;
-         z-index:20;
+.componentip {
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  top: 55px;
+  left: 298px;
+  border: 1px solid;
+  z-index: 20;
+  background: #ffffff;
 }
 </style>
