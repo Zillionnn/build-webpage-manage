@@ -125,7 +125,7 @@
           <div class="logo">
             <img :src="menuConfig.top.logo" />
           </div>
-          <span>{{menuConfig.top.appName}}</span>
+          <span :style="`color:${menuConfig.top.appNameColor}`">{{menuConfig.top.appName}}</span>
         </div>
         <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
           <div
@@ -264,6 +264,10 @@
           <div>
             <label>应用名称</label>
             <input type="text" v-model="menuConfig.top.appName" />
+          </div>
+          <div>
+            <label>应用名称颜色</label>
+            <el-color-picker v-model="menuConfig.top.appNameColor"></el-color-picker>
           </div>
         </div>
         <hr />

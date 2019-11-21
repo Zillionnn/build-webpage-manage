@@ -102,7 +102,7 @@ export default{
       side_bg_color: app.menuConfig.left.backgroundColor,
       side_text_color: app.menuConfig.left.menu.textColor,
       side_text_active_color: app.menuConfig.left.menu.textActiveColor,
-      app_name_color: ''
+      app_name_color: app.menuConfig.top.appNameColor
     })
   }
 
