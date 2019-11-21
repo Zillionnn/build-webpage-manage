@@ -64,15 +64,44 @@
       </div>
       <div v-show="active===1">
         <button>组件</button>
-
-        <div class="component-drag" draggable="true" @dragstart="startDrag('text')">文字</div>
-        <div class="component-drag" draggable="true" @dragstart="startDrag('pic')">图片</div>
-        <div class="component-drag" draggable="true" @dragstart="startDrag('chart-bar')">柱状图</div>
-        <div class="component-drag" draggable="true" @dragstart="startDrag('chart-line')">折线图</div>
-        <div class="component-drag" draggable="true" @dragstart="startDrag('chart-pie')">饼图</div>
-        <div class="component-drag" draggable="true" @dragstart="startDrag('table')">表格</div>
+        <div class="components-list">
+          <component-item
+            :icon="'icon-text-height'"
+            draggable="true"
+            @dragstart="startDrag('text')"
+            @toggleTip="toggleTip('text')"
+          >文字</component-item>
+          <component-item
+            :icon="'icon-image'"
+            @toggleTip="toggleTip('image')"
+            draggable="true"
+            @dragstart="startDrag('pic')"
+          >图片</component-item>
+          <component-item
+            :icon="'icon-chart-bar-solid'"
+            draggable="true"
+            @dragstart="startDrag('chart-bar')"
+            @toggleTip="toggleTip('chart-bar')"
+          >柱状图</component-item>
+          <component-item
+            :icon="'icon-chart-line-solid'"
+            draggable="true"
+            @dragstart="startDrag('chart-line')"
+            @toggleTip="toggleTip('chart-line')"
+          >折线图</component-item>
+          <component-item
+            :icon="'icon-pie-chart'"
+            draggable="true"
+            @dragstart="startDrag('chart-pie')"
+            @toggleTip="toggleTip('chart-pie')"
+          >饼图</component-item>
+          <component-item :icon="'icon-table'" draggable="true" @dragstart="startDrag('table')">表格</component-item>
+        </div>
       </div>
     </div>
+    <div class="componentip" v-show="showComponentTip">
+        <component-tip :type="showComponentTipType" />
+      </div>
 
     <!-- ###################################画布 操作界面 ########################################-->
 
@@ -178,12 +207,22 @@
       <!-- 菜单列表 -->
       <div v-if="configType==='menu'" class="config_">
         <div class="component-config-tab">
-          <a v-if=" layout.indexOf('left')>-1" :class="{'tab-active': menuConfigActiveTab===1 && layout.indexOf('top')>-1}" @click="menuConfigActiveTab=1">左导航</a>
-          <a v-if=" layout.indexOf('top')>-1" :class="{'tab-active': menuConfigActiveTab===2 && layout.indexOf('left')>-1}" @click="menuConfigActiveTab=2">顶部</a>
+          <a
+            v-if=" layout.indexOf('left')>-1"
+            :class="{'tab-active': menuConfigActiveTab===1 && layout.indexOf('top')>-1}"
+            @click="menuConfigActiveTab=1"
+          >左导航</a>
+          <a
+            v-if=" layout.indexOf('top')>-1"
+            :class="{'tab-active': menuConfigActiveTab===2 && layout.indexOf('left')>-1}"
+            @click="menuConfigActiveTab=2"
+          >顶部</a>
         </div>
 
         <!-- ########################## 左导航 ###################### -->
-        <div v-if="layout.indexOf('left-nav')===0 || layout.indexOf('left-top-nav')>-1  && menuConfigActiveTab===1">
+        <div
+          v-if="layout.indexOf('left-nav')===0 || layout.indexOf('left-top-nav')>-1  && menuConfigActiveTab===1"
+        >
           <div class="flex-align-items-center">
             <label>背景</label>
             <el-color-picker v-model="menuConfig.left.backgroundColor"></el-color-picker>
@@ -194,7 +233,7 @@
             <!-- <div class="flex-align-items-center">
               <span>背景色</span>
               <el-color-picker v-model="menuConfig.left.menu.backgroundColor"></el-color-picker>
-            </div> -->
+            </div>-->
             <div class="flex-align-items-center">
               <span>文字默认色</span>
               <el-color-picker v-model="menuConfig.left.menu.textColor"></el-color-picker>
@@ -206,20 +245,22 @@
           </div>
         </div>
         <!-- ########################## 顶部 ###################### -->
-        <div v-if="layout.indexOf('top-nav')===0 || layout.indexOf('left-top-nav')>-1 && menuConfigActiveTab===2">
+        <div
+          v-if="layout.indexOf('top-nav')===0 || layout.indexOf('left-top-nav')>-1 && menuConfigActiveTab===2"
+        >
           <label>顶部栏背景</label>
           <el-color-picker v-model="menuConfig.top.backgroundColor"></el-color-picker>
           <div>
             <label>logo</label>
             <button>上传</button>
-            <input type="text" v-model="menuConfig.top.logo"/>
+            <input type="text" v-model="menuConfig.top.logo" />
           </div>
           <div>
             <label>应用名称</label>
-            <input type="text" v-model="menuConfig.top.appName"/>
+            <input type="text" v-model="menuConfig.top.appName" />
           </div>
         </div>
-
+        <hr />
         <div class="tab-title">菜单配置</div>
         <div class="menu-list" v-for="(item,index) in menuList" :key="index">
           {{item.name}}
@@ -416,6 +457,7 @@ import LayoutThumbnail from '@/components/common/LayoutThumbnail.vue'
 import ConfigTextDataSource from './component/ConfigTextDataSource.vue'
 import ImageConfig from './component/ImageConfig.vue'
 import EventInfoBox from './component/EventInfoBox.vue'
+import ComponentItem from './component/ComponentItem.vue'
 
 export default {
   name: 'PageConfig',
@@ -424,7 +466,8 @@ export default {
     LayoutThumbnail,
     ConfigTextDataSource,
     ImageConfig,
-    EventInfoBox
+    EventInfoBox,
+    ComponentItem
   },
   computed: {
     appId () {
@@ -516,7 +559,8 @@ export default {
             textActiveColor: '#00cd2f'
           }
         }
-      }
+      },
+      showComponentTip: false
       // ###### return ######
     }
   },
@@ -1459,6 +1503,11 @@ export default {
         currentBox.info.dataSource.url + `?offset=${p * 10}&limit=${10}`
       const r = $http[method](url)
       currentBox.info.dataSource.data = r.data
+    },
+
+    toggleTip (type) {
+      this.showComponentTipType = type
+      this.showComponentTip = !this.showComponentTip
     }
     // ###########################methods#########################
   }
@@ -1578,11 +1627,11 @@ export default {
   top: 0px;
   left: 0px;
 }
-.logo{
+.logo {
   width: 100px;
   height: 100%;
 }
-.logo img{
+.logo img {
   width: 100%;
   height: 100%;
 }
@@ -1626,5 +1675,20 @@ export default {
   font-size: 14px;
   width: 100%;
   cursor: pointer;
+}
+.components-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  position: relative;
+}
+.componentip{
+         width: 200px;
+         height:100px;
+         position: absolute;
+         top : 55px;
+         left: 298px;
+         border: 1px solid;
+         z-index:20;
 }
 </style>
