@@ -1,5 +1,5 @@
 <template>
- <div class="component-tip">
+ <div class="component-tip" v-if="showComponentTipType">
      <div>
          {{type[showComponentTipType].title}}
      </div>
