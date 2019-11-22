@@ -1535,7 +1535,7 @@ export default {
 
     toggleTip (type, args) {
       this.showComponentTipType = type
-      console.log(this.showComponentTipType, args)
+      // console.log(this.showComponentTipType, args)
       this.showComponentTip = args[0]
     },
 
