@@ -121,11 +121,11 @@
         @dragover="allowDrop"
         @drop="drop"
       >
-        <div class="top-nav" :style="`margin-left:10px;background-color:${menuConfig.top.backgroundColor}`">
+        <div class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`">
           <div class="logo">
             <img :src="menuConfig.top.logo" />
           </div>
-          <span :style="`color:${menuConfig.top.appNameColor}`">{{menuConfig.top.appName}}</span>
+          <span :style="`margin-left:10px;color:${menuConfig.top.appNameColor}`">{{menuConfig.top.appName}}</span>
         </div>
         <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
           <div
