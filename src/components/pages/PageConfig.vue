@@ -122,14 +122,14 @@
         @drop="drop"
       >
       <!-- 顶部栏 -->
-        <div class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`">
+        <div v-if="layout.indexOf('top')>-1" class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`">
           <div class="logo">
-            <img :src="menuConfig.top.logo" />
+            <img v-if="menuConfig.top.logo!==''" :src="menuConfig.top.logo" />
           </div>
           <span :style="`margin-left:10px;color:${menuConfig.top.appNameColor}`">{{menuConfig.top.appName}}</span>
         </div>
         <!-- 左导航栏 -->
-        <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
+        <div v-if="layout.indexOf('left')>-1" class="left-nav" :style="`top: ${leftMenuToTop}px;background-color: ${menuConfig.left.backgroundColor}`">
           <div
             class="left-nav-menu-item"
             v-for="(item,index) in menuList"
@@ -502,6 +502,10 @@ export default {
 
     isPie () {
       return this.componentType.indexOf('pie') > -1
+    },
+
+    leftMenuToTop () {
+      return this.layout.indexOf('top') > -1 ? 50 : 0
     }
   },
 
@@ -1681,6 +1685,7 @@ export default {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  z-index: 999;
 }
 .logo {
   width: 100px;
@@ -1694,10 +1699,10 @@ export default {
   background: #000000;
   width: 200px;
   position: absolute;
-  top: 50px;
   left: 0px;
   bottom: 0;
   color: #ffffff;
+  z-index: 999;
 }
 .left-nav-menu-item {
   padding: 10px;
