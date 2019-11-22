@@ -121,12 +121,14 @@
         @dragover="allowDrop"
         @drop="drop"
       >
+      <!-- 顶部栏 -->
         <div class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`">
           <div class="logo">
             <img :src="menuConfig.top.logo" />
           </div>
           <span :style="`margin-left:10px;color:${menuConfig.top.appNameColor}`">{{menuConfig.top.appName}}</span>
         </div>
+        <!-- 左导航栏 -->
         <div class="left-nav" :style="`background-color: ${menuConfig.left.backgroundColor}`">
           <div
             class="left-nav-menu-item"
@@ -148,6 +150,7 @@
             @update="update(box,arguments)"
             @select="setSelect(index)"
             @doneReset="doneReset(box)"
+            :isLock="box.isLock"
           >
             <div v-if="box.show" :id="box.id" style="width:100%;height:100%;">
               <v-render :componentInfo="box.info"></v-render>
@@ -455,7 +458,7 @@
     </el-dialog>
 
     <div ref="contextMenu" style="position: absolute;">
-      <context-menu v-if="contextMenuVisible"/>
+      <context-menu v-if="contextMenuVisible" @doCmd="menuCmd" :isLock="currentBox.isLock" />
     </div>
 
   </div>
@@ -816,7 +819,8 @@ export default {
         width: 100,
         height: 100,
         rotate: 0,
-        eventList: []
+        eventList: [],
+        isLock: false
       }
       if (this.dragItem === 'text') {
         newComponent = {
@@ -869,6 +873,7 @@ export default {
           width: 350,
           height: 300,
           rotate: 0,
+          isLock: false,
           type: 'chart-bar',
           eventList: [],
           info: {
@@ -946,6 +951,7 @@ export default {
           width: 350,
           height: 300,
           rotate: 0,
+          isLock: false,
           eventList: [],
           type: 'chart-line',
           info: {
@@ -1010,6 +1016,7 @@ export default {
           width: 350,
           height: 300,
           rotate: 0,
+          isLock: false,
           eventList: [],
           type: 'chart-pie',
           info: {
@@ -1090,6 +1097,7 @@ export default {
           width: 400,
           height: 200,
           rotate: 0,
+          isLock: false,
           eventList: [],
           type: 'table',
           info: {
@@ -1535,12 +1543,22 @@ export default {
      * TODO 右键菜单
      */
     rightClickMenu (e) {
+      e.preventDefault()
+      this.contextMenuVisible = true
+      console.log(this.currentBox)
+      this.$refs.contextMenu.style.top = e.y + 'px'
+      this.$refs.contextMenu.style.left = e.x + 'px'
+    },
 
-      // e.preventDefault()
-      // this.contextMenuVisible = true
-      // console.log(this.$refs)
-      // this.$refs.contextMenu.style.top = e.y + 'px'
-      // this.$refs.contextMenu.style.left = e.x + 'px'
+    menuCmd (cmd) {
+      if (cmd === 'lock') {
+        this.currentBox.isLock = true
+        console.log(this.currentBox)
+      }
+      if (cmd === 'unlock') {
+        this.currentBox.isLock = false
+      }
+      this.contextMenuVisible = false
     }
 
     // ###########################methods#########################

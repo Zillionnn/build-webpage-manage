@@ -3,7 +3,7 @@
     <div
       class="wrap"
       :style="`width:100%;height: 100%;transform:rotate(${rotate}deg);`"
-      :class="{'wrap-box-shadow':showOperate}"
+      :class="{'wrap-box-shadow':!isLock && showOperate}"
     >
       <div
         class="content-op"
@@ -14,15 +14,15 @@
       >
         <slot />
       </div>
-      <div class="operate op-rotate" v-show="showOperate" @mousedown="setRotate(1)" @mouseup="setSize(0)"></div>
-      <div class="operate top-left" v-show="showOperate" @mousedown="setSizeCross('UP','LEFT')" @mouseup="setSize(0)"></div>
-      <div class="operate top" v-show="showOperate" @mousedown="setSize(1, 'UP')" @mouseup="setSize(0)"></div>
-      <div class="operate top-right" v-show="showOperate" @mousedown="setSizeCross('UP','RIGHT')" @mouseup="setSize(0)"></div>
-      <div class="operate right" v-show="showOperate" @mousedown="setSize(1, 'RIGHT')" @mouseup="setSize(0)"></div>
-      <div class="operate bottom-right" v-show="showOperate" @mousedown="setSizeCross('DOWN','RIGHT')" @mouseup="setSize(0)"></div>
-      <div class="operate bottom" v-show="showOperate" @mousedown="setSize(1, 'DOWN')" @mouseup="setSize(0)"></div>
-      <div class="operate bottom-left" v-show="showOperate" @mousedown="setSizeCross('DOWN','LEFT')" @mouseup="setSize(0)"></div>
-      <div class="operate left" v-show="showOperate" @mousedown="setSize(1,'LEFT')" @mouseup="setSize(0)"></div>
+      <div class="operate op-rotate" v-show="!isLock && showOperate" @mousedown="setRotate(1)" @mouseup="setSize(0)"></div>
+      <div class="operate top-left" v-show="!isLock && showOperate" @mousedown="setSizeCross('UP','LEFT')" @mouseup="setSize(0)"></div>
+      <div class="operate top" v-show="!isLock && showOperate" @mousedown="setSize(1, 'UP')" @mouseup="setSize(0)"></div>
+      <div class="operate top-right" v-show="!isLock && showOperate" @mousedown="setSizeCross('UP','RIGHT')" @mouseup="setSize(0)"></div>
+      <div class="operate right" v-show="!isLock && showOperate" @mousedown="setSize(1, 'RIGHT')" @mouseup="setSize(0)"></div>
+      <div class="operate bottom-right" v-show="!isLock && showOperate" @mousedown="setSizeCross('DOWN','RIGHT')" @mouseup="setSize(0)"></div>
+      <div class="operate bottom" v-show="!isLock && showOperate" @mousedown="setSize(1, 'DOWN')" @mouseup="setSize(0)"></div>
+      <div class="operate bottom-left" v-show="!isLock && showOperate" @mousedown="setSizeCross('DOWN','LEFT')" @mouseup="setSize(0)"></div>
+      <div class="operate left" v-show="!isLock && showOperate" @mousedown="setSize(1,'LEFT')" @mouseup="setSize(0)"></div>
     </div>
   </div>
 </template>
@@ -75,6 +75,11 @@ export default {
       type: [String, Number],
       required: false,
       default: 1
+    },
+    isLock: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   data () {
@@ -207,7 +212,7 @@ export default {
     // 是否可以拖动
     setDrag (p, event) {
       console.log(event)
-      if (event.button === 0) {
+      if (event.button === 0 && !this.isLock) {
         this.canMove = p === 0
         this.toggleOperates(true)
         this.$emit('select')

@@ -3,7 +3,8 @@
      <div>
          <a class="menu-item" @click="doCMD('up')">上一层</a>
          <a class="menu-item" @click="doCMD('down')">下一层</a>
-         <a class="menu-item" @click="doCMD('lock')">锁定</a>
+         <a class="menu-item" v-if="!isLock" @click="doCMD('lock')">锁定</a>
+         <a class="menu-item" v-if="isLock" @click="doCMD('unlock')">解锁</a>
      </div>
 
  </div>
@@ -14,6 +15,13 @@ export default {
   name: 'ContextMenu',
   components: {
 
+  },
+  props: {
+    isLock: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
   data () {
     return {
