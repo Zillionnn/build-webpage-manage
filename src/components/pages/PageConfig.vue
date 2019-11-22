@@ -110,7 +110,7 @@
 
     <!-- ###################################画布 操作界面 ########################################-->
 
-    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas">
+    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas" @click="contextMenuVisible=false"  @contextmenu ="rightClickMenu">
       <!-- <div class="slider-scale">
         <el-slider v-model="canvasScale" :step="10" @change="scaleCanvas"></el-slider>
       </div>-->
@@ -135,7 +135,7 @@
           >{{item.name}}</div>
         </div>
         <!-- 页面上的组件 -->
-        <div v-for="(box, index) in page.components" :key="index">
+        <div v-for="(box, index) in page.components" :key="index"  @contextmenu ="rightClickMenu">
           <v-transform
             :ref="box.id"
             :id="box.id"
@@ -453,6 +453,11 @@
         <el-button type="primary" @click="subMenu()">确 定</el-button>
       </span>
     </el-dialog>
+
+    <div ref="contextMenu" style="position: absolute;">
+      <context-menu v-if="contextMenuVisible"/>
+    </div>
+
   </div>
 </template>
 
@@ -469,6 +474,7 @@ import ImageConfig from './component/ImageConfig.vue'
 import EventInfoBox from './component/EventInfoBox.vue'
 import ComponentItem from './component/ComponentItem.vue'
 import ComponentTip from './component/ComponentTip.vue'
+import ContextMenu from './component/ContextMenu.vue'
 
 export default {
   name: 'PageConfig',
@@ -479,7 +485,8 @@ export default {
     ImageConfig,
     EventInfoBox,
     ComponentItem,
-    ComponentTip
+    ComponentTip,
+    ContextMenu
   },
   computed: {
     appId () {
@@ -572,7 +579,8 @@ export default {
           }
         }
       },
-      showComponentTip: false
+      showComponentTip: false,
+      contextMenuVisible: false
       // ###### return ######
     }
   },
@@ -1521,7 +1529,20 @@ export default {
       this.showComponentTipType = type
       console.log(this.showComponentTipType, args)
       this.showComponentTip = args[0]
+    },
+
+    /**
+     * TODO 右键菜单
+     */
+    rightClickMenu (e) {
+
+      // e.preventDefault()
+      // this.contextMenuVisible = true
+      // console.log(this.$refs)
+      // this.$refs.contextMenu.style.top = e.y + 'px'
+      // this.$refs.contextMenu.style.left = e.x + 'px'
     }
+
     // ###########################methods#########################
   }
 }

@@ -218,6 +218,7 @@ export default {
         }
       } else {
         console.log('right button')
+        this.$emit('select')
       }
     },
 
