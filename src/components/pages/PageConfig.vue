@@ -11,26 +11,13 @@
           <div @click="showNavigator= !showNavigator" class="tab-title">导航布局</div>
           <div v-show="showNavigator">
             <div class="layout-wrap">
-              <layout-thumbnail
-                :type="'none'"
-                :class="{'activeLayout':layout==='none'}"
-                @change="setLayout('none')"
-              />
-              <layout-thumbnail
-                :type="'top-nav'"
-                :class="{'activeLayout':layout==='top-nav'}"
-                @change="setLayout('top-nav')"
-              />
-              <layout-thumbnail
-                :type="'left-nav'"
-                :class="{'activeLayout':layout==='left-nav'}"
-                @change="setLayout('left-nav')"
-              />
-              <layout-thumbnail
-                :type="'left-top-nav'"
-                :class="{'activeLayout':layout==='left-top-nav'}"
-                @change="setLayout('left-top-nav')"
-              />
+              <layout-thumbnail :type="'none'" :class="{'activeLayout':layout==='none'}" @change="setLayout('none')" />
+              <layout-thumbnail :type="'top-nav'" :class="{'activeLayout':layout==='top-nav'}"
+                @change="setLayout('top-nav')" />
+              <layout-thumbnail :type="'left-nav'" :class="{'activeLayout':layout==='left-nav'}"
+                @change="setLayout('left-nav')" />
+              <layout-thumbnail :type="'left-top-nav'" :class="{'activeLayout':layout==='left-top-nav'}"
+                @change="setLayout('left-top-nav')" />
             </div>
 
             <button @click="getAppMenu()">页面设置</button>
@@ -43,12 +30,8 @@
           </div>
           <div>
             <div v-for="(item,index) in pageList" :key="index">
-              <div
-                v-if="item.edit===false"
-                @click="selectedPage(item)"
-                :class="{'active-page':activePage===item.page_id}"
-                style="display:flex;justify-content:space-between;"
-              >
+              <div v-if="item.edit===false" @click="selectedPage(item)"
+                :class="{'active-page':activePage===item.page_id}" style="display:flex;justify-content:space-between;">
                 <span>{{item.name}}</span>
                 <span>
                   <i class="icon-edit-solid" @click="resetPageEdit(item)"></i>
@@ -65,42 +48,18 @@
       <div v-show="active===1">
         <button>组件</button>
         <div class="components-list">
-          <component-item
-            :icon="'icon-text-height'"
-            draggable="true"
-            @dragstart="startDrag('text')"
-            @toggleTip="toggleTip('text', arguments)"
-          >文字</component-item>
-          <component-item
-            :icon="'icon-image'"
-            @toggleTip="toggleTip('image',arguments)"
-            draggable="true"
-            @dragstart="startDrag('pic')"
-          >图片</component-item>
-          <component-item
-            :icon="'icon-chart-bar-solid'"
-            draggable="true"
-            @dragstart="startDrag('chart-bar')"
-            @toggleTip="toggleTip('chart_bar', arguments)"
-          >柱状图</component-item>
-          <component-item
-            :icon="'icon-chart-line-solid'"
-            draggable="true"
-            @dragstart="startDrag('chart-line')"
-            @toggleTip="toggleTip('chart_line', arguments)"
-          >折线图</component-item>
-          <component-item
-            :icon="'icon-pie-chart'"
-            draggable="true"
-            @dragstart="startDrag('chart-pie')"
-            @toggleTip="toggleTip('chart_pie', arguments)"
-          >饼图</component-item>
-          <component-item
-            :icon="'icon-table'"
-            draggable="true"
-            @dragstart="startDrag('table')"
-            @toggleTip="toggleTip('table', arguments)"
-          >表格</component-item>
+          <component-item :icon="'icon-text-height'" draggable="true" @dragstart="startDrag('text')"
+            @toggleTip="toggleTip('text', arguments)">文字</component-item>
+          <component-item :icon="'icon-image'" @toggleTip="toggleTip('image',arguments)" draggable="true"
+            @dragstart="startDrag('pic')">图片</component-item>
+          <component-item :icon="'icon-chart-bar-solid'" draggable="true" @dragstart="startDrag('chart-bar')"
+            @toggleTip="toggleTip('chart_bar', arguments)">柱状图</component-item>
+          <component-item :icon="'icon-chart-line-solid'" draggable="true" @dragstart="startDrag('chart-line')"
+            @toggleTip="toggleTip('chart_line', arguments)">折线图</component-item>
+          <component-item :icon="'icon-pie-chart'" draggable="true" @dragstart="startDrag('chart-pie')"
+            @toggleTip="toggleTip('chart_pie', arguments)">饼图</component-item>
+          <component-item :icon="'icon-table'" draggable="true" @dragstart="startDrag('table')"
+            @toggleTip="toggleTip('table', arguments)">表格</component-item>
         </div>
       </div>
     </div>
@@ -110,48 +69,32 @@
 
     <!-- ###################################画布 操作界面 ########################################-->
 
-    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas" @click="contextMenuVisible=false"  @contextmenu ="rightClickMenu">
+    <div class="canvas-body" ref="canvasBody" @scroll="scrollCanvas" @click="contextMenuVisible=false"
+      @contextmenu="rightClickMenu">
       <!-- <div class="slider-scale">
         <el-slider v-model="canvasScale" :step="10" @change="scaleCanvas"></el-slider>
       </div>-->
       <!-- :style="`transform:scale(${canvasBodyScale*0.01})`" -->
-      <div
-        class="canvas-wrap"
-        :style="`margin-left: ${canvasMarginLeft}px;  margin-top: ${canvasMarginTop}px;`"
-        @dragover="allowDrop"
-        @drop="drop"
-      >
-      <!-- 顶部栏 -->
-        <div v-if="layout.indexOf('top')>-1" class="top-nav" :style="`background-color:${menuConfig.top.backgroundColor}`">
+      <div class="canvas-wrap" :style="`margin-left: ${canvasMarginLeft}px;  margin-top: ${canvasMarginTop}px;`"
+        @dragover="allowDrop" @drop="drop">
+        <!-- 顶部栏 -->
+        <div v-if="layout.indexOf('top')>-1" class="top-nav"
+          :style="`background-color:${menuConfig.top.backgroundColor}`">
           <div class="logo">
             <img v-if="menuConfig.top.logo!==''" :src="menuConfig.top.logo" />
           </div>
           <span :style="`margin-left:10px;color:${menuConfig.top.appNameColor}`">{{menuConfig.top.appName}}</span>
         </div>
         <!-- 左导航栏 -->
-        <div v-if="layout.indexOf('left')>-1" class="left-nav" :style="`top: ${leftMenuToTop}px;background-color: ${menuConfig.left.backgroundColor}`">
-          <div
-            class="left-nav-menu-item"
-            v-for="(item,index) in menuList"
-            :key="index"
-          >{{item.name}}</div>
+        <div v-if="layout.indexOf('left')>-1" class="left-nav"
+          :style="`top: ${leftMenuToTop}px;background-color: ${menuConfig.left.backgroundColor}`">
+          <div class="left-nav-menu-item" v-for="(item,index) in menuList" :key="index">{{item.name}}</div>
         </div>
         <!-- 页面上的组件 -->
-        <div v-for="(box, index) in page.components" :key="index"  @contextmenu ="rightClickMenu">
-          <v-transform
-            :ref="box.id"
-            :id="box.id"
-            :canvas="canvas"
-            :y="box.y"
-            :x="box.x"
-            :width="box.width"
-            :height="box.height"
-            :rotate="box.rotate"
-            @update="update(box,arguments)"
-            @select="setSelect(index)"
-            @doneReset="doneReset(box)"
-            :isLock="box.isLock"
-          >
+        <div v-for="(box, index) in page.components" :key="index" @contextmenu="rightClickMenu">
+          <v-transform :ref="box.id" :id="box.id" :canvas="canvas" :y="box.y" :x="box.x" :width="box.width"
+            :height="box.height" :rotate="box.rotate" @update="update(box,arguments)" @select="setSelect(index)"
+            @doneReset="doneReset(box)" :isLock="box.isLock">
             <div v-if="box.show" :id="box.id" style="width:100%;height:100%;">
               <v-render :componentInfo="box.info"></v-render>
             </div>
@@ -181,10 +124,7 @@
                 <el-option label="当前应用页面" :value="0"></el-option>
                 <el-option label="指定链接" :value="1"></el-option>
               </el-select>
-              <div
-                v-if="formMenu.linkType===0"
-                style="border: 1px solid;height: 500px; overflow:auto;"
-              >
+              <div v-if="formMenu.linkType===0" style="border: 1px solid;height: 500px; overflow:auto;">
                 <!-- <el-radio-group v-model="formMenu.link">
                   <el-radio
                     v-for="(item,index) in pageList"
@@ -193,12 +133,8 @@
                   >{{item.name}}</el-radio>
                 </el-radio-group>-->
                 <el-radio-group v-model="formMenu.link">
-                  <el-radio
-                    style="display:block;padding:10px;"
-                    v-for="(item,index) in pageList"
-                    :key="index"
-                    :label="item.page_id"
-                  >{{item.name}}</el-radio>
+                  <el-radio style="display:block;padding:10px;" v-for="(item,index) in pageList" :key="index"
+                    :label="item.page_id">{{item.name}}</el-radio>
                 </el-radio-group>
               </div>
               <div v-else>
@@ -216,22 +152,16 @@
       <!-- 菜单列表 -->
       <div v-if="configType==='menu'" class="config_">
         <div class="component-config-tab">
-          <a
-            v-if=" layout.indexOf('left')>-1"
+          <a v-if=" layout.indexOf('left')>-1"
             :class="{'tab-active': menuConfigActiveTab===1 && layout.indexOf('top')>-1}"
-            @click="menuConfigActiveTab=1"
-          >左导航</a>
-          <a
-            v-if=" layout.indexOf('top')>-1"
+            @click="menuConfigActiveTab=1">左导航</a>
+          <a v-if=" layout.indexOf('top')>-1"
             :class="{'tab-active': menuConfigActiveTab===2 && layout.indexOf('left')>-1}"
-            @click="menuConfigActiveTab=2"
-          >顶部</a>
+            @click="menuConfigActiveTab=2">顶部</a>
         </div>
 
         <!-- ########################## 左导航 ###################### -->
-        <div
-          v-if="layout.indexOf('left-nav')===0 || layout.indexOf('left-top-nav')>-1  && menuConfigActiveTab===1"
-        >
+        <div v-if="layout.indexOf('left-nav')===0 || layout.indexOf('left-top-nav')>-1  && menuConfigActiveTab===1">
           <div class="flex-align-items-center">
             <label>背景</label>
             <el-color-picker v-model="menuConfig.left.backgroundColor"></el-color-picker>
@@ -254,9 +184,7 @@
           </div>
         </div>
         <!-- ########################## 顶部 ###################### -->
-        <div
-          v-if="layout.indexOf('top-nav')===0 || layout.indexOf('left-top-nav')>-1 && menuConfigActiveTab===2"
-        >
+        <div v-if="layout.indexOf('top-nav')===0 || layout.indexOf('left-top-nav')>-1 && menuConfigActiveTab===2">
           <label>顶部栏背景</label>
           <el-color-picker v-model="menuConfig.top.backgroundColor"></el-color-picker>
           <div>
@@ -284,14 +212,8 @@
       </div>
       <div v-if="configType==='component'" class="config_">
         <div class="component-config-tab">
-          <a
-            :class="{'tab-active': componentConfigActiveTab===1}"
-            @click="componentConfigActiveTab=1"
-          >样式</a>
-          <a
-            :class="{'tab-active': componentConfigActiveTab===2}"
-            @click="componentConfigActiveTab=2"
-          >交互</a>
+          <a :class="{'tab-active': componentConfigActiveTab===1}" @click="componentConfigActiveTab=1">样式</a>
+          <a :class="{'tab-active': componentConfigActiveTab===2}" @click="componentConfigActiveTab=2">交互</a>
         </div>
         <!-- 样式 -->
         <div v-if="componentConfigActiveTab===1">
@@ -310,12 +232,8 @@
             内容:
             <div class="flex-space-between">
               <input v-model="currentBox.info.content" />
-              <i
-                v-if="!currentBox.info.dataSource"
-                class="icon-database"
-                style="color:#bbb;"
-                @click="toggleDataSource('text')"
-              ></i>
+              <i v-if="!currentBox.info.dataSource" class="icon-database" style="color:#bbb;"
+                @click="toggleDataSource('text')"></i>
               <span style="width: 50px;" v-else>
                 <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('text')"></i>
                 <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
@@ -330,11 +248,8 @@
             <div>
               <span>字号:</span>
               <el-select v-model="currentBox.info.style.fontSize">
-                <el-option
-                  v-for="(item,index) in fontSizeList"
-                  :key="index"
-                  :value="item.value"
-                >{{item.name}}</el-option>
+                <el-option v-for="(item,index) in fontSizeList" :key="index" :value="item.value">{{item.name}}
+                </el-option>
               </el-select>
             </div>
           </div>
@@ -355,12 +270,8 @@
             <!-- 配置数据源 -->
             <div>
               <span>配置数据源</span>
-              <i
-                v-if="!currentBox.info.dataSource"
-                class="icon-database"
-                style="color:#bbb;"
-                @click="toggleDataSource('chart')"
-              ></i>
+              <i v-if="!currentBox.info.dataSource" class="icon-database" style="color:#bbb;"
+                @click="toggleDataSource('chart')"></i>
               <span style="width: 50px;" v-else>
                 <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('chart')"></i>
                 <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
@@ -388,10 +299,7 @@
                 标题
                 <input v-model="currentBox.info.props.options.title.text" />
               </div>
-              <div
-                v-for="(serie,index) in currentBox.info.props.options.series[0].data"
-                :key="index"
-              >
+              <div v-for="(serie,index) in currentBox.info.props.options.series[0].data" :key="index">
                 <div>系列{{index+1}}名称</div>
                 <div class="flex-space-between">
                   <span>{{serie.name}}</span>
@@ -406,12 +314,8 @@
           <div v-if="componentType.indexOf('table')>-1">
             <div>
               <span>配置数据源</span>
-              <i
-                v-if="!currentBox.info.dataSource"
-                class="icon-database"
-                style="color:#bbb;"
-                @click="toggleDataSource('chart')"
-              ></i>
+              <i v-if="!currentBox.info.dataSource" class="icon-database" style="color:#bbb;"
+                @click="toggleDataSource('chart')"></i>
               <span style="width: 50px;" v-else>
                 <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('table')"></i>
                 <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
@@ -420,24 +324,15 @@
           </div>
 
           <!-- ######### 配置数据源######### -->
-          <config-text-data-source
-            :dataSourceConfigType="dataSourceConfigType"
-            :showDataSource="showDataSource"
-            :boxDataSource="currentBox.info.dataSource"
-            @assignDataSource="subDataSource"
-            @toggleDataSource="toggleDataSource"
-          />
+          <config-text-data-source :dataSourceConfigType="dataSourceConfigType" :showDataSource="showDataSource"
+            :boxDataSource="currentBox.info.dataSource" @assignDataSource="subDataSource"
+            @toggleDataSource="toggleDataSource" />
         </div>
         <!-- 交互 -->
         <div v-if="componentConfigActiveTab===2" style="padding: 12px;">
           <div class="event-list">
             <div v-for="(item, index) in currentBox.eventList" :key="index">
-              <event-info-box
-                :componentType="currentBox.type"
-                :info="item"
-                :index="index"
-                @remove="removeEvent"
-              />
+              <event-info-box :componentType="currentBox.type" :info="item" :index="index" @remove="removeEvent" />
             </div>
           </div>
           <button class="next-btn" @click="addCurrentBoxEvent">新增交互</button>

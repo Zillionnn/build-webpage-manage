@@ -1,28 +1,29 @@
 <template>
   <div class="container" :style="`top:${y}px;left:${x}px;width:${width}px;height:${height}px;`">
-    <div
-      class="wrap"
-      :style="`width:100%;height: 100%;transform:rotate(${rotate}deg);`"
-      :class="{'wrap-box-shadow':!isLock && showOperate}"
-    >
-      <div
-        class="content-op"
-        :style="'opacity:'+opacity"
-        @mousedown="setDrag(0,$event)"
-        @mouseup="setDrag(1,$event)"
-        @mousemove="moveCointainer"
-      >
+    <div class="wrap" :style="`width:100%;height: 100%;transform:rotate(${rotate}deg);`"
+      :class="{'wrap-box-shadow':!isLock && showOperate}">
+      <div class="content-op" :style="'opacity:'+opacity" @mousedown="setDrag(0,$event)" @mouseup="setDrag(1,$event)"
+        @mousemove="moveCointainer">
         <slot />
       </div>
-      <div class="operate op-rotate" v-show="!isLock && showOperate" @mousedown="setRotate(1)" @mouseup="setSize(0)"></div>
-      <div class="operate top-left" v-show="!isLock && showOperate" @mousedown="setSizeCross('UP','LEFT')" @mouseup="setSize(0)"></div>
-      <div class="operate top" v-show="!isLock && showOperate" @mousedown="setSize(1, 'UP')" @mouseup="setSize(0)"></div>
-      <div class="operate top-right" v-show="!isLock && showOperate" @mousedown="setSizeCross('UP','RIGHT')" @mouseup="setSize(0)"></div>
-      <div class="operate right" v-show="!isLock && showOperate" @mousedown="setSize(1, 'RIGHT')" @mouseup="setSize(0)"></div>
-      <div class="operate bottom-right" v-show="!isLock && showOperate" @mousedown="setSizeCross('DOWN','RIGHT')" @mouseup="setSize(0)"></div>
-      <div class="operate bottom" v-show="!isLock && showOperate" @mousedown="setSize(1, 'DOWN')" @mouseup="setSize(0)"></div>
-      <div class="operate bottom-left" v-show="!isLock && showOperate" @mousedown="setSizeCross('DOWN','LEFT')" @mouseup="setSize(0)"></div>
-      <div class="operate left" v-show="!isLock && showOperate" @mousedown="setSize(1,'LEFT')" @mouseup="setSize(0)"></div>
+      <div class="operate op-rotate" v-show="!isLock && showOperate" @mousedown="setRotate(1)" @mouseup="setSize(0)">
+      </div>
+      <div class="operate top-left" v-show="!isLock && showOperate" @mousedown="setSizeCross('UP','LEFT')"
+        @mouseup="setSize(0)"></div>
+      <div class="operate top" v-show="!isLock && showOperate" @mousedown="setSize(1, 'UP')" @mouseup="setSize(0)">
+      </div>
+      <div class="operate top-right" v-show="!isLock && showOperate" @mousedown="setSizeCross('UP','RIGHT')"
+        @mouseup="setSize(0)"></div>
+      <div class="operate right" v-show="!isLock && showOperate" @mousedown="setSize(1, 'RIGHT')" @mouseup="setSize(0)">
+      </div>
+      <div class="operate bottom-right" v-show="!isLock && showOperate" @mousedown="setSizeCross('DOWN','RIGHT')"
+        @mouseup="setSize(0)"></div>
+      <div class="operate bottom" v-show="!isLock && showOperate" @mousedown="setSize(1, 'DOWN')" @mouseup="setSize(0)">
+      </div>
+      <div class="operate bottom-left" v-show="!isLock && showOperate" @mousedown="setSizeCross('DOWN','LEFT')"
+        @mouseup="setSize(0)"></div>
+      <div class="operate left" v-show="!isLock && showOperate" @mousedown="setSize(1,'LEFT')" @mouseup="setSize(0)">
+      </div>
     </div>
   </div>
 </template>
@@ -109,7 +110,10 @@ export default {
   },
   computed: {
     center () {
-      return {x: this.canvas.left + this.x + this.width / 2, y: this.canvas.top + this.y + this.height / 2}
+      return {
+        x: this.canvas.left + this.x + this.width / 2,
+        y: this.canvas.top + this.y + this.height / 2
+      }
     }
   },
   created () {
@@ -153,28 +157,30 @@ export default {
       if (this.canReSize) {
         console.log('this.DIRECTION.UP', this.DIRECTION.UP)
         if (this.DIRECTION.UP) {
-          const d = (this.preY + this.canvas.top - this.mousePosition.y) + this.preHeight
+          const d =
+            this.preY + this.canvas.top - this.mousePosition.y + this.preHeight
           console.log('d', d)
           const y = this.mousePosition.y
           if (d > 1) {
-            this.$emit('update', {y: y, height: d})
+            this.$emit('update', { y: y, height: d })
           }
         }
         if (this.DIRECTION.RIGHT) {
           const d = this.mousePosition.x - this.x - this.canvas.left
-          this.$emit('update', {width: d})
+          this.$emit('update', { width: d })
         }
         if (this.DIRECTION.LEFT) {
-          const d = (this.preX + this.canvas.left - this.mousePosition.x) + this.preWidth
+          const d =
+            this.preX + this.canvas.left - this.mousePosition.x + this.preWidth
           console.log('d', d)
           const x = this.mousePosition.x
           if (d > 1) {
-            this.$emit('update', {x: x, width: d})
+            this.$emit('update', { x: x, width: d })
           }
         }
         if (this.DIRECTION.DOWN) {
           const d = this.mousePosition.y - this.y - this.canvas.top
-          this.$emit('update', {height: d})
+          this.$emit('update', { height: d })
         }
       }
 
@@ -183,7 +189,10 @@ export default {
         console.log(this.mousePosition.x, this.center)
 
         // two point distance
-        const d = Math.sqrt(Math.pow((this.mousePosition.x - this.center.x), 2) + Math.pow((this.mousePosition.y - this.center.y), 2))
+        const d = Math.sqrt(
+          Math.pow(this.mousePosition.x - this.center.x, 2) +
+            Math.pow(this.mousePosition.y - this.center.y, 2)
+        )
         console.log(d)
         // mouse to point x
         let rightAngle = 0
@@ -192,18 +201,18 @@ export default {
           // 弧度
           const radian = Math.asin(rightAngle / d)
           if (rightAngle > 0) {
-            this.$emit('update', { rotate: radian * 180 / Math.PI })
+            this.$emit('update', { rotate: (radian * 180) / Math.PI })
           } else {
-            this.$emit('update', { rotate: (radian * 180 / Math.PI) + 360 })
+            this.$emit('update', { rotate: (radian * 180) / Math.PI + 360 })
           }
         } else {
           rightAngle = this.mousePosition.y - this.center.y
           // 弧度
           const radian = Math.asin(rightAngle / d)
           if (this.mousePosition.x - this.center.x > 0) {
-            this.$emit('update', { rotate: (radian * 180 / Math.PI) + 90 })
+            this.$emit('update', { rotate: (radian * 180) / Math.PI + 90 })
           } else {
-            this.$emit('update', { rotate: 270 - (radian * 180 / Math.PI) })
+            this.$emit('update', { rotate: 270 - (radian * 180) / Math.PI })
           }
         }
       }
@@ -219,7 +228,13 @@ export default {
         if (this.canMove) {
           this.offsetX = this.mousePosition.x - this.x - this.canvas.left
           this.offsetY = this.mousePosition.y - this.y - this.canvas.top
-          console.log(this.offsetX, this.offsetY, ',,,', event.offsetX, event.offsetY)
+          console.log(
+            this.offsetX,
+            this.offsetY,
+            ',,,',
+            event.offsetX,
+            event.offsetY
+          )
         }
       } else {
         console.log('right button')
@@ -298,23 +313,23 @@ export default {
   width: 100% !important;
   height: 100% !important;
 }
-.wrap:hover{
-   position: relative;
-   width: 100%;
+.wrap:hover {
+  position: relative;
+  width: 100%;
   height: 100%;
   box-shadow: 0 0 0 0.5px #0cf, inset 0 0 0 0.5px #0cf;
 }
 .wrap-box-shadow {
   position: relative;
-   width: 100%;
+  width: 100%;
   height: 100%;
   box-shadow: 0 0 0 0.5px #0cf, inset 0 0 0 0.5px #0cf;
 }
-.content-op{
+.content-op {
   width: 100%;
   height: 100%;
 }
-.content-op:hover{
+.content-op:hover {
   width: 100%;
   height: 100%;
   cursor: move;
@@ -326,21 +341,21 @@ export default {
   border: 1px solid #cccccc;
   position: absolute;
 }
-.op-rotate{
+.op-rotate {
   top: -30px;
   left: 50%;
   margin-left: -5px;
   cursor: ew-resize;
 }
-.op-rotate::before{
-    content: " ";
-    position: absolute;
-    width: 0;
-    border-left: 1px solid #0cf;
-    left: 5px;
-    top: 10px;
-    height: 19px;
-    pointer-events: none;
+.op-rotate::before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  border-left: 1px solid #0cf;
+  left: 5px;
+  top: 10px;
+  height: 19px;
+  pointer-events: none;
 }
 .top-left {
   top: -5px;

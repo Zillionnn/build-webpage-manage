@@ -61,18 +61,16 @@ export default {
      * 提交app
      */
     subApp () {
-      api.base.addApp(this.form)
-        .then(res => {
-          this.getAppList()
-        })
+      api.base.addApp(this.form).then(res => {
+        this.getAppList()
+      })
       this.dialogVisible = false
     },
 
     deleteApp (id) {
-      api.base.deleteApp(id)
-        .then(res => {
-          this.getAppList()
-        })
+      api.base.deleteApp(id).then(res => {
+        this.getAppList()
+      })
     }
     // ###########################methods#########################
   }

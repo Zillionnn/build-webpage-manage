@@ -8,16 +8,9 @@
         <td v-for="(item, index) in row" :key="index">{{item}}</td>
       </tr>
     </table>
-    <el-pagination
-      v-if="showPagination"
-      background
-      layout="prev, pager, next"
-      @current-change="handleCurrentChange"
-      :current-page.sync="pagination.currentPage"
-      :page-size="pagination.pageSize"
-      :total="pagination.total"
-      style="float:right;"
-    ></el-pagination>
+    <el-pagination v-if="showPagination" background layout="prev, pager, next" @current-change="handleCurrentChange"
+      :current-page.sync="pagination.currentPage" :page-size="pagination.pageSize" :total="pagination.total"
+      style="float:right;"></el-pagination>
   </div>
 </template>
 
