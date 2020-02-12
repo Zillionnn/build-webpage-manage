@@ -8,8 +8,8 @@ import store from './store'
 /* eslint-disable no-new */
 import 'vue-hoperun-icon'
 
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
+// import ElementUI from 'element-ui'
+// import 'element-ui/lib/theme-chalk/index.css'
 
 // echart 组件，减小打包体积
 import 'echarts/lib/chart/bar'
@@ -34,7 +34,7 @@ import VTable from './components/common/VTable.vue'
 Vue.component('v-echart', ECharts)
 Vue.component('v-table', VTable)
 
-Vue.use(ElementUI)
+// Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 new Vue({
