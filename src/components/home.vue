@@ -3,6 +3,7 @@
     <div style="width: 100%;">
       <button style="float:left; margin: 20px;" @click="openAddAppDialog()">新建</button>
       <el-table :data="appList">
+        <el-table-column label="id" prop="id"></el-table-column>
         <el-table-column label="app" prop="name"></el-table-column>
         <el-table-column label="updatetime" prop="update_time"></el-table-column>
         <el-table-column>

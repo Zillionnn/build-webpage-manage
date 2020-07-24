@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {$http} from '@/service/requestService.js'
 
-const url = process.env.URL
+const url = 'http://127.0.0.1:7000'
 
 export default{
   appList () {
