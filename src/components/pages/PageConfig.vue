@@ -20,7 +20,7 @@
                 @change="setLayout('left-top-nav')" />
             </div>
 
-            <button @click="getAppMenu()">页面设置</button>
+            <button @click="getAppMenu()">菜单设置</button>
           </div>
         </div>
         <div>
@@ -314,8 +314,10 @@
           <div v-if="componentType.indexOf('table')>-1">
             <div>
               <span>配置数据源</span>
+              <!-- 图标数据源 -->
               <i v-if="!currentBox.info.dataSource" class="icon-database" style="color:#bbb;"
                 @click="toggleDataSource('chart')"></i>
+                <!-- 表格数据源 -->
               <span style="width: 50px;" v-else>
                 <i class="icon-pen-solid" style="color:#bbb;" @click="toggleDataSource('table')"></i>
                 <i class="icon-bin" style="color:#bbb;" @click="clearDataSource"></i>
@@ -323,7 +325,7 @@
             </div>
           </div>
 
-          <!-- ######### 配置数据源######### -->
+          <!-- ######### 配置数据源 组件######### -->
           <config-text-data-source :dataSourceConfigType="dataSourceConfigType" :showDataSource="showDataSource"
             :boxDataSource="currentBox.info.dataSource" @assignDataSource="subDataSource"
             @toggleDataSource="toggleDataSource" />
@@ -1347,6 +1349,7 @@ export default {
       console.log(this.page)
     },
 
+    // 生成echart 数据
     async generateData (component, dataSource) {
       console.log('generateData>>>>>>', component, dataSource)
       if (component.type.indexOf('pie') > -1) {
@@ -1357,6 +1360,13 @@ export default {
           type: 'pie',
           radius: '55%',
           center: ['50%', '60%'],
+          /**
+           * ************************接口返回的data 示例**********************
+           *  [
+              {value:10,name:'系列1'},
+              {value:30,name:'系列2'}
+              ]
+           */
           data: dataSource.data.data
         }
         component.info.props.options.series.push(serie)
@@ -1377,6 +1387,19 @@ export default {
         component.info.props.options.series = []
         const item = dataSource.data[0]
         console.log(item)
+        /**
+         * *********** 接口返回data 示例*********
+         *
+         * [
+            ['Mon', 820,4],
+            ['Ton', 100,44],
+            ['Wed', 200,67],
+            ['Thu', 300,76],
+            ['Fri', 400,2],
+            ['Sat', 50,0],
+            ['Sun', 24,99],
+          ]
+         */
         for (let i = 1; i < item.length; i++) {
           const data = dataSource.data.map(e => {
             return e[i]
