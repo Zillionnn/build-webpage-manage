@@ -487,6 +487,7 @@ export default {
     }
   },
   watch: {
+    // 监听 vuex的doSave 保存页面
     doSave (val) {
       if (val === true) {
         console.log(val)
@@ -625,7 +626,7 @@ export default {
     getMousePosition (event) {
       this.mousePosition.x = event.x
       this.mousePosition.y = event.y
-      console.log(this.mousePosition.x, this.mousePosition.y)
+      // console.log(this.mousePosition.x, this.mousePosition.y)
     },
 
     getPages () {
@@ -1116,7 +1117,8 @@ export default {
     },
 
     /**
-     * 删除菜单
+     * TODO
+     * 删除菜单(接口没成功,)
      */
     deleteMenu (menu) {
       api.base
