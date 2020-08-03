@@ -670,13 +670,18 @@ export default {
       console.log('index', index)
     },
 
-    // 更新组件的位置,大小等
+    /**
+     * 更新组件的位置,大小等
+     */
     update (box, args) {
       console.log(box)
       const conf = args[0]
       this.currentBox = box
       box = Object.assign(box, conf)
       console.log(box)
+      // *********************************************************************************************
+      // ********************拖动时 要减去 画布距离窗口左边缘的距离, 画布距离窗口上边缘****************
+      // *********************************************************************************************
       if (conf.x) {
         box.x = conf.x - this.canvas.left
       }
@@ -716,6 +721,7 @@ export default {
       console.log(this.page)
       let components = this.page.components
       let newComponent = null
+      // 组件默认属性
       const defaultProp = {
         show: true,
         id: id,
@@ -733,16 +739,19 @@ export default {
           ...defaultProp,
           type: 'text',
           info: {
+            // 必需
             tagName: 'div',
             attrs: {
               id: id
             },
+            // 样式
             style: {
               position: 'absolute',
               color: '#000000',
               fontSize: '12px'
             },
             content: '文字',
+            // 数据源
             dataSource: null
           }
         }
@@ -993,7 +1002,7 @@ export default {
         console.log(this.page)
       }
 
-      // 表格
+      // TODO 表格 貌似未完成
       if (this.dragItem === 'table') {
         newComponent = {
           show: true,
@@ -1478,6 +1487,10 @@ export default {
       this.$refs.contextMenu.style.left = e.x + 'px'
     },
 
+    /**
+     * TODO
+     * 右键菜单, 制作了解锁/锁定
+     */
     menuCmd (cmd) {
       if (cmd === 'lock') {
         this.currentBox.isLock = true
