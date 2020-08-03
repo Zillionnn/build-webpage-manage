@@ -625,6 +625,7 @@ export default {
     getMousePosition (event) {
       this.mousePosition.x = event.x
       this.mousePosition.y = event.y
+      console.log(this.mousePosition.x, this.mousePosition.y)
     },
 
     getPages () {
@@ -666,6 +667,7 @@ export default {
       console.log('index', index)
     },
 
+    // 更新组件的位置,大小等
     update (box, args) {
       console.log(box)
       const conf = args[0]
@@ -704,7 +706,8 @@ export default {
     /**
      * 组件拖放到 画布
      */
-    drop () {
+    drop (e) {
+      console.log('drop', e)
       console.log(this.dragItem)
       const id = 't' + parseInt(Math.random() * 100)
       console.log(this.page)
@@ -713,8 +716,9 @@ export default {
       const defaultProp = {
         show: true,
         id: id,
-        x: 300,
-        y: 100,
+        // 放置后位置
+        x: e.offsetX,
+        y: e.offsetY,
         width: 100,
         height: 100,
         rotate: 0,
